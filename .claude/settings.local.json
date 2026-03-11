@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat /d/Projects/UNBOX/armarket/node_modules/next/package.json | python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(d['version']\\)\")",
+      "Bash(cat /d/Projects/UNBOX/armarket/node_modules/next-intl/package.json 2>/dev/null | python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(d.get\\('version','not installed'\\)\\)\" 2>/dev/null || echo \"next-intl: not installed\")",
+      "Bash(python -c \"import urllib.request, json; r = urllib.request.urlopen\\('https://registry.npmjs.org/next-intl/latest'\\); d = json.loads\\(r.read\\(\\)\\); print\\('next-intl latest:', d['version']\\); print\\('peer next:', d.get\\('peerDependencies',{}\\).get\\('next','?'\\)\\)\" 2>/dev/null || echo \"offline check needed\")",
+      "Bash(python -c \"\nimport urllib.request, json\npackages = ['zustand', 'framer-motion', 'lucide-react']\nfor pkg in packages:\n    try:\n        r = urllib.request.urlopen\\(f'https://registry.npmjs.org/{pkg}/latest'\\)\n        d = json.loads\\(r.read\\(\\)\\)\n        peers = d.get\\('peerDependencies', {}\\)\n        print\\(f'{pkg}@{d[\\\\\"version\\\\\"]} | peers: {peers}'\\)\n    except Exception as e:\n        print\\(f'{pkg}: error - {e}'\\)\n\" 2>/dev/null)",
+      "Bash(cd D:/Projects/UNBOX/armarket && npm install next-intl zustand framer-motion lucide-react)",
+      "Bash(cd D:/Projects/UNBOX/armarket && npm install clsx tailwind-merge)",
+      "Bash(cd D:/Projects/UNBOX/armarket && npm run build 2>&1 | tail -60)",
+      "Bash(cd D:/Projects/UNBOX/armarket && cp src/middleware.ts src/proxy.ts && rm src/middleware.ts)",
+      "Bash(cd D:/Projects/UNBOX/armarket && npm run build 2>&1 | tail -30)"
+    ]
+  }
+}

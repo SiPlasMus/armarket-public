@@ -1,0 +1,193 @@
+{
+  "nav": {
+    "home": "Bosh sahifa",
+    "news": "Yangiliklar",
+    "products": "Mahsulotlar",
+    "about": "Biz haqimizda",
+    "contacts": "Aloqa"
+  },
+  "common": {
+    "loading": "Yuklanmoqda...",
+    "error": "Xatolik yuz berdi",
+    "retry": "Qayta urinish",
+    "viewAll": "Barchasini ko'rish",
+    "readMore": "Batafsil",
+    "close": "Yopish",
+    "back": "Orqaga",
+    "search": "Qidirish...",
+    "filter": "Filtrlash",
+    "sort": "Saralash",
+    "noResults": "Natija topilmadi",
+    "loadMore": "Ko'proq yuklash",
+    "currency": "so'm",
+    "today": "Bugun",
+    "thisWeek": "Bu hafta",
+    "thisMonth": "Bu oy",
+    "all": "Barchasi",
+    "inStock": "Mavjud",
+    "outOfStock": "Mavjud emas",
+    "new": "Yangi",
+    "popular": "Mashhur",
+    "sale": "Aksiya",
+    "limited": "Cheklangan"
+  },
+  "hero": {
+    "badge": "Rasmiy platforma",
+    "title": "AR Market — Qulay Xarid Platformasi",
+    "subtitle": "Minglab mahsulotlar, tezkor yetkazib berish va qulay narxlar. Biznesingiz uchun zarur bo'lgan hamma narsa bir joyda.",
+    "ctaProducts": "Mahsulotlar",
+    "ctaNews": "Yangiliklar"
+  },
+  "products": {
+    "title": "Mahsulotlar",
+    "subtitle": "Keng assortiment, qulay narxlar",
+    "search": "Mahsulot qidirish...",
+    "filterTitle": "Filtrlar",
+    "sortLabel": "Saralash",
+    "sortOptions": {
+      "popular": "Mashhurlik bo'yicha",
+      "newest": "Yangilik bo'yicha",
+      "priceAsc": "Narx: arzondan qimmatga",
+      "priceDesc": "Narx: qimmatdan arzonga"
+    },
+    "filters": {
+      "category": "Kategoriya",
+      "priceRange": "Narx oralig'i",
+      "availability": "Mavjudlik"
+    },
+    "popular": {
+      "title": "Mashhur Mahsulotlar",
+      "subtitle": "Eng ko'p sotib olingan mahsulotlar"
+    },
+    "details": "Batafsil",
+    "noResults": "Mahsulot topilmadi",
+    "loadMore": "Ko'proq yuklash",
+    "backToCatalog": "Katalogga qaytish",
+    "relatedProducts": "O'xshash mahsulotlar"
+  },
+  "news": {
+    "title": "Yangiliklar",
+    "subtitle": "So'nggi yangiliklar va aksiyalar",
+    "featured": "Asosiy yangilik",
+    "readMore": "Batafsil o'qish",
+    "categories": {
+      "all": "Barchasi",
+      "news": "Yangiliklar",
+      "promo": "Aksiyalar",
+      "update": "Yangilanishlar"
+    },
+    "noResults": "Yangilik topilmadi",
+    "loadMore": "Ko'proq yuklash",
+    "preview": {
+      "title": "So'nggi Yangiliklar",
+      "subtitle": "Platformamizdan eng so'nggi yangiliklar va aksiyalar"
+    }
+  },
+  "about": {
+    "title": "Biz Haqimizda",
+    "subtitle": "AR Market — zamonaviy xarid ekosistemasi",
+    "mission": {
+      "title": "Bizning Missiyamiz",
+      "text": "Biznes va xaridor o'rtasida eng qulay, shaffof va tezkor xarid tajribasini yaratish."
+    },
+    "vision": {
+      "title": "Bizning Maqsadimiz",
+      "text": "O'zbekistondagi eng yirik raqamli xarid platformasiga aylanish."
+    },
+    "values": {
+      "title": "Bizning Qadriyatlarimiz",
+      "trust": "Ishonchlilik",
+      "speed": "Tezkorlik",
+      "quality": "Sifat",
+      "innovation": "Innovatsiya"
+    },
+    "stats": {
+      "products": "Mahsulotlar",
+      "clients": "Mijozlar",
+      "years": "Yillik tajriba",
+      "cities": "Shaharlar"
+    }
+  },
+  "contacts": {
+    "title": "Aloqa",
+    "subtitle": "Biz bilan bog'laning",
+    "phone": "Telefon",
+    "telegram": "Telegram",
+    "address": "Manzil",
+    "hours": "Ish vaqti",
+    "hoursValue": "Dushanba–Shanba: 9:00–18:00",
+    "form": {
+      "title": "Xabar Yuborish",
+      "name": "Ismingiz",
+      "phone": "Telefon raqamingiz",
+      "message": "Xabaringiz",
+      "send": "Yuborish",
+      "success": "Xabaringiz muvaffaqiyatli yuborildi!",
+      "error": "Xatolik yuz berdi. Qayta urinib ko'ring."
+    }
+  },
+  "cookies": {
+    "message": "Biz sayt tajribasini yaxshilash uchun cookie fayllardan foydalanamiz.",
+    "accept": "Qabul qilish",
+    "reject": "Rad etish",
+    "settings": "Sozlamalar",
+    "learnMore": "Ko'proq bilish"
+  },
+  "themes": {
+    "title": "Mavzu",
+    "red": "Qizil",
+    "green": "Yashil",
+    "yellow": "Sariq",
+    "dark": "Qorong'u"
+  },
+  "languages": {
+    "uz": "O'zbek",
+    "ru": "Русский"
+  },
+  "footer": {
+    "tagline": "Zamonaviy xarid platformasi",
+    "rights": "Barcha huquqlar himoyalangan",
+    "privacy": "Maxfiylik siyosati",
+    "terms": "Foydalanish shartlari"
+  },
+  "advantages": {
+    "title": "Nega AR Market?",
+    "subtitle": "Biz siz uchun eng yaxshi tajribani taqdim etamiz",
+    "items": {
+      "assortment": {
+        "title": "Keng Assortiment",
+        "description": "100,000+ mahsulot bir joyda. Siz izlayotgan narsa albatta bizda bor."
+      },
+      "speed": {
+        "title": "Tezkor Yetkazib Berish",
+        "description": "Buyurtmangiz tez va xavfsiz yetkazib beriladi."
+      },
+      "price": {
+        "title": "Qulay Narxlar",
+        "description": "Bozordagi eng raqobatbardosh narxlar va muntazam aksiyalar."
+      },
+      "support": {
+        "title": "24/7 Qo'llab-Quvvatlash",
+        "description": "Istalgan vaqt yordam berishga tayyormiz."
+      },
+      "trust": {
+        "title": "Ishonchli Platforma",
+        "description": "Minglab mijozlarning ishonchiga sazovor bo'lgan platforma."
+      },
+      "digital": {
+        "title": "Raqamli Ekosistema",
+        "description": "Zamonaviy texnologiyalar asosida qurilgan xarid tizimi."
+      }
+    }
+  },
+  "categories": {
+    "title": "Kategoriyalar",
+    "subtitle": "Kerakli kategoriyani tanlang",
+    "viewAll": "Barcha kategoriyalar"
+  },
+  "cta": {
+    "title": "Xaridni Boshlang",
+    "subtitle": "Minglab mahsulot orasidan o'zingizga mosini toping",
+    "button": "Katalogni ko'rish"
+  }
+}

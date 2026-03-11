@@ -1,0 +1,397 @@
+import type { Product, Category, NewsItem } from '@/types';
+
+// ─────────────────────────────────────────────
+// Categories
+// ─────────────────────────────────────────────
+
+export const DEMO_CATEGORIES: Category[] = [
+  { id: 'electronics', name: 'Elektronika', nameRu: 'Электроника', icon: 'Cpu', productCount: 47 },
+  { id: 'office', name: 'Ofis jihozlari', nameRu: 'Офисные товары', icon: 'Briefcase', productCount: 83 },
+  { id: 'furniture', name: 'Mebel', nameRu: 'Мебель', icon: 'Armchair', productCount: 29 },
+  { id: 'household', name: 'Maishiy tovarlar', nameRu: 'Хозяйственные товары', icon: 'Home', productCount: 61 },
+  { id: 'industrial', name: 'Sanoat', nameRu: 'Промышленное', icon: 'Wrench', productCount: 34 },
+];
+
+// ─────────────────────────────────────────────
+// Products
+// ─────────────────────────────────────────────
+
+export const DEMO_PRODUCTS: Product[] = [
+  {
+    id: 'p001',
+    name: 'Noutbuk Lenovo IdeaPad 3',
+    nameRu: 'Ноутбук Lenovo IdeaPad 3',
+    price: 8_500_000,
+    categoryId: 'electronics',
+    badge: 'popular',
+    description: 'Intel Core i5, 8GB RAM, 512GB SSD, 15.6" FHD',
+    descriptionRu: 'Intel Core i5, 8 ГБ ОЗУ, 512 ГБ SSD, 15.6" FHD',
+    inStock: true,
+    rating: 4.7,
+    reviewCount: 128,
+    createdAt: '2025-11-01',
+  },
+  {
+    id: 'p002',
+    name: 'Printer HP LaserJet Pro M404n',
+    nameRu: 'Принтер HP LaserJet Pro M404n',
+    price: 3_200_000,
+    categoryId: 'electronics',
+    badge: 'popular',
+    description: 'Monoxrom lazer printer, A4, 38 ppm',
+    descriptionRu: 'Монохромный лазерный принтер, A4, 38 стр/мин',
+    inStock: true,
+    rating: 4.5,
+    reviewCount: 64,
+    createdAt: '2025-10-15',
+  },
+  {
+    id: 'p003',
+    name: "A4 Qog'oz (500 varaq)",
+    nameRu: 'Бумага A4 (500 листов)',
+    price: 48_000,
+    categoryId: 'office',
+    description: "80 g/m², oq rangli, ofis uchun",
+    descriptionRu: '80 г/м², белая, для офиса',
+    inStock: true,
+    rating: 4.9,
+    reviewCount: 312,
+    createdAt: '2025-09-01',
+  },
+  {
+    id: 'p004',
+    name: 'Ofis Kreslo Comfort Pro',
+    nameRu: 'Офисное кресло Comfort Pro',
+    price: 1_850_000,
+    categoryId: 'furniture',
+    badge: 'new',
+    description: "Ergonomik, bel qo'llab-quvvatlash, to'q moviy",
+    descriptionRu: 'Эргономичное, поясничная поддержка, тёмно-синее',
+    inStock: true,
+    rating: 4.6,
+    reviewCount: 47,
+    createdAt: '2025-12-01',
+  },
+  {
+    id: 'p005',
+    name: 'Monitor Samsung 24" FHD',
+    nameRu: 'Монитор Samsung 24" FHD',
+    price: 2_100_000,
+    categoryId: 'electronics',
+    description: 'IPS, 75Hz, HDMI, DisplayPort',
+    descriptionRu: 'IPS, 75 Гц, HDMI, DisplayPort',
+    inStock: true,
+    rating: 4.4,
+    reviewCount: 89,
+    createdAt: '2025-10-20',
+  },
+  {
+    id: 'p006',
+    name: "Klaviatura + Sichqoncha To'plami",
+    nameRu: 'Комплект клавиатура + мышь',
+    price: 320_000,
+    categoryId: 'electronics',
+    description: "Simsiz, Logitech MK235, 2.4GHz",
+    descriptionRu: 'Беспроводной, Logitech MK235, 2.4 ГГц',
+    inStock: true,
+    rating: 4.3,
+    reviewCount: 156,
+    createdAt: '2025-09-10',
+  },
+  {
+    id: 'p007',
+    name: 'USB-C Hub 7-in-1',
+    nameRu: 'USB-C Хаб 7-в-1',
+    price: 185_000,
+    categoryId: 'electronics',
+    badge: 'new',
+    description: 'HDMI 4K, USB 3.0 x3, SD Card, PD 100W',
+    descriptionRu: 'HDMI 4K, USB 3.0 x3, SD Card, PD 100W',
+    inStock: true,
+    rating: 4.5,
+    reviewCount: 73,
+    createdAt: '2025-12-10',
+  },
+  {
+    id: 'p008',
+    name: "Qog'oz Papka (50 dona)",
+    nameRu: 'Папки для бумаг (50 шт)',
+    price: 38_000,
+    categoryId: 'office',
+    description: 'A4, assorted ranglar, plastik',
+    descriptionRu: 'A4, разных цветов, пластиковые',
+    inStock: true,
+    rating: 4.2,
+    reviewCount: 201,
+    createdAt: '2025-08-01',
+  },
+  {
+    id: 'p009',
+    name: 'Whiteboard 90×120 sm',
+    nameRu: 'Маркерная доска 90×120 см',
+    price: 680_000,
+    categoryId: 'office',
+    description: "Magnit, markerli, o'chiruvchi bilan",
+    descriptionRu: 'Магнитная, в комплекте маркеры и губка',
+    inStock: true,
+    rating: 4.6,
+    reviewCount: 38,
+    createdAt: '2025-10-05',
+  },
+  {
+    id: 'p010',
+    name: 'Suv Dispenseri Hot&Cold',
+    nameRu: 'Кулер для воды Hot&Cold',
+    price: 750_000,
+    categoryId: 'household',
+    description: 'Issiq va sovuq suv, 19L idish uchun',
+    descriptionRu: 'Горячая и холодная вода, для бутылей 19 л',
+    inStock: true,
+    rating: 4.4,
+    reviewCount: 95,
+    createdAt: '2025-09-20',
+  },
+  {
+    id: 'p011',
+    name: 'Elektr Choynak 1.7L',
+    nameRu: 'Электрочайник 1.7 л',
+    price: 285_000,
+    categoryId: 'household',
+    description: '2200W, zanglamaydigan po\'lat, avtomatik o\'chadi',
+    descriptionRu: '2200 Вт, нержавеющая сталь, автовыключение',
+    inStock: true,
+    rating: 4.5,
+    reviewCount: 143,
+    createdAt: '2025-08-15',
+  },
+  {
+    id: 'p012',
+    name: 'Xavfsizlik Kamera 4MP',
+    nameRu: 'Камера безопасности 4MP',
+    price: 890_000,
+    categoryId: 'electronics',
+    description: 'IP66, gechelik rejim, Wi-Fi, Hikvision',
+    descriptionRu: 'IP66, ночное видение, Wi-Fi, Hikvision',
+    inStock: true,
+    rating: 4.7,
+    reviewCount: 52,
+    createdAt: '2025-11-20',
+  },
+  {
+    id: 'p013',
+    name: "Stol uchun LED Lampa",
+    nameRu: 'Настольная LED лампа',
+    price: 195_000,
+    categoryId: 'electronics',
+    description: "3 yorugʻlik rejimi, USB zaryadlovchi, bukladigan",
+    descriptionRu: '3 режима освещения, USB зарядка, складная',
+    inStock: true,
+    rating: 4.3,
+    reviewCount: 87,
+    createdAt: '2025-10-01',
+  },
+  {
+    id: 'p014',
+    name: 'Proyektor Xiaomi Mi 2 Pro',
+    nameRu: 'Проектор Xiaomi Mi 2 Pro',
+    price: 4_500_000,
+    categoryId: 'electronics',
+    badge: 'popular',
+    description: '1080p FHD, 1300 ANSI, Android, HDMI',
+    descriptionRu: '1080p FHD, 1300 ANSI, Android, HDMI',
+    inStock: true,
+    rating: 4.6,
+    reviewCount: 29,
+    createdAt: '2025-11-10',
+  },
+  {
+    id: 'p015',
+    name: 'Smartfon Samsung Galaxy A55',
+    nameRu: 'Смартфон Samsung Galaxy A55',
+    price: 5_200_000,
+    categoryId: 'electronics',
+    badge: 'new',
+    description: '6.6", 8/256GB, 50MP, 5000mAh',
+    descriptionRu: '6.6", 8/256 ГБ, 50 МП, 5000 мАч',
+    inStock: true,
+    rating: 4.8,
+    reviewCount: 214,
+    createdAt: '2025-12-05',
+  },
+  {
+    id: 'p016',
+    name: 'Sanitayzer Dispenser 1L',
+    nameRu: 'Диспенсер санитайзера 1 л',
+    price: 35_000,
+    categoryId: 'household',
+    description: 'Avtomatik sensor, 70% etanol',
+    descriptionRu: 'Автоматический сенсор, 70% этанол',
+    inStock: true,
+    rating: 4.1,
+    reviewCount: 178,
+    createdAt: '2025-07-01',
+  },
+  {
+    id: 'p017',
+    name: "To'rli Saqlash Shelf 5 qavatli",
+    nameRu: 'Стеллаж металлический 5-ярусный',
+    price: 1_100_000,
+    categoryId: 'furniture',
+    description: "Metal, 180×90×35sm, 150kg yuk ko'taradi",
+    descriptionRu: 'Металлический, 180×90×35 см, нагрузка 150 кг',
+    inStock: false,
+    rating: 4.5,
+    reviewCount: 41,
+    createdAt: '2025-09-05',
+  },
+  {
+    id: 'p018',
+    name: 'Gaz Gazlamasi (50m)',
+    nameRu: 'Пузырчатая плёнка (50 м)',
+    price: 95_000,
+    categoryId: 'industrial',
+    description: "Qadoqlash uchun, 1.2m kenglik",
+    descriptionRu: 'Упаковочная, ширина 1.2 м',
+    inStock: true,
+    rating: 4.0,
+    reviewCount: 67,
+    createdAt: '2025-08-20',
+  },
+  {
+    id: 'p019',
+    name: "Mehribon Skotch (36 dona)",
+    nameRu: 'Скотч прозрачный (36 шт)',
+    price: 65_000,
+    categoryId: 'office',
+    badge: 'sale',
+    description: '48mm×50m, ofis va qadoqlash uchun',
+    descriptionRu: '48 мм × 50 м, для офиса и упаковки',
+    inStock: true,
+    rating: 4.2,
+    reviewCount: 289,
+    createdAt: '2025-07-15',
+  },
+  {
+    id: 'p020',
+    name: 'Wi-Fi Router TP-Link Archer C80',
+    nameRu: 'Wi-Fi Роутер TP-Link Archer C80',
+    price: 420_000,
+    categoryId: 'electronics',
+    description: 'AC1900, Dual Band, MU-MIMO, 4 antenna',
+    descriptionRu: 'AC1900, двухдиапазонный, MU-MIMO, 4 антенны',
+    inStock: true,
+    rating: 4.6,
+    reviewCount: 103,
+    createdAt: '2025-10-25',
+  },
+];
+
+// ─────────────────────────────────────────────
+// News
+// ─────────────────────────────────────────────
+
+export const DEMO_NEWS: NewsItem[] = [
+  {
+    id: 'n001',
+    slug: 'ar-market-yangi-versiya',
+    title: "AR Market platformasi yangilandi — v2.0",
+    titleRu: 'Платформа AR Market обновилась — v2.0',
+    summary: "Yangi interfeys, tezroq qidiruv va ko'proq mahsulot. Biz siz uchun yanada yaxshiroq platformani taqdim etamiz.",
+    summaryRu: 'Новый интерфейс, более быстрый поиск и больше товаров. Мы представляем улучшенную платформу для вас.',
+    image: undefined,
+    date: '2025-12-15',
+    category: 'update',
+    featured: true,
+  },
+  {
+    id: 'n002',
+    slug: 'ofis-jihozlari-chegirma',
+    title: "Ofis jihozlariga 20% chegirma — yanvar aksiyasi",
+    titleRu: 'Скидка 20% на офисные товары — январская акция',
+    summary: "Yanvarning oxirigacha barcha ofis jihozlariga 20% chegirma. Juda ko'p mahsulotlar aksiyaga tushdi.",
+    summaryRu: 'До конца января скидка 20% на все офисные товары. Воспользуйтесь выгодным предложением.',
+    image: undefined,
+    date: '2025-12-10',
+    category: 'promo',
+    featured: false,
+  },
+  {
+    id: 'n003',
+    slug: 'yangi-sheriklik-bitimi',
+    title: "AR Market va Samsung O'zbekiston sheriklik bitimi",
+    titleRu: 'AR Market и Samsung Узбекистан заключили партнёрское соглашение',
+    summary: "Endi Samsung mahsulotlarini AR Market orqali eng qulay narxda sotib olishingiz mumkin.",
+    summaryRu: 'Теперь вы можете приобретать продукцию Samsung через AR Market по лучшим ценам.',
+    image: undefined,
+    date: '2025-11-28',
+    category: 'news',
+    featured: false,
+  },
+  {
+    id: 'n004',
+    slug: '100000-mahsulot-milestone',
+    title: "100,000 mahsulot — AR Market katalogida yangi rekord",
+    titleRu: '100 000 товаров — новый рекорд в каталоге AR Market',
+    summary: "Katalogimizda 100,000 dan ortiq mahsulot mavjud. Kerak bo'lgan hamma narsani bizdan toping.",
+    summaryRu: 'В нашем каталоге уже более 100 000 товаров. Найдите всё необходимое у нас.',
+    image: undefined,
+    date: '2025-11-15',
+    category: 'news',
+    featured: false,
+  },
+  {
+    id: 'n005',
+    slug: 'navruz-aksiyasi',
+    title: "Navro'z aksiyasi — 21 martgacha katta chegirmalar",
+    titleRu: 'Акция к Навруз — большие скидки до 21 марта',
+    summary: "Navro'z bayrami munosabati bilan yuzlab mahsulotlarga katta chegirmalar. Qulay xarid qiling!",
+    summaryRu: 'В честь праздника Навруз скидки на сотни товаров. Делайте покупки выгодно!',
+    image: undefined,
+    date: '2025-11-01',
+    category: 'promo',
+    featured: false,
+  },
+  {
+    id: 'n006',
+    slug: 'yangi-tolov-usullari',
+    title: "Yangi to'lov usullari: Click va Payme qo'shildi",
+    titleRu: "Новые способы оплаты: добавлены Click и Payme",
+    summary: "Endi AR Market orqali Click va Payme to'lov tizimlari orqali qulay to'lov qilishingiz mumkin.",
+    summaryRu: 'Теперь через AR Market можно оплачивать через платёжные системы Click и Payme.',
+    image: undefined,
+    date: '2025-10-20',
+    category: 'update',
+    featured: false,
+  },
+];
+
+// ─────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────
+
+export function getProductsByPeriod(
+  period: 'today' | 'week' | 'month',
+  limit = 8
+): Product[] {
+  // Demo: shuffle slightly per period so tabs feel different
+  const seed = period === 'today' ? 0 : period === 'week' ? 3 : 6;
+  return [...DEMO_PRODUCTS]
+    .sort((a, b) => (b.reviewCount ?? 0) - (a.reviewCount ?? 0))
+    .slice(seed, seed + limit);
+}
+
+export function getProductsByCategory(categoryId: string, limit = 8): Product[] {
+  return DEMO_PRODUCTS.filter((p) => p.categoryId === categoryId).slice(0, limit);
+}
+
+export function getProductById(id: string): Product | undefined {
+  return DEMO_PRODUCTS.find((p) => p.id === id);
+}
+
+export function getNewsBySlug(slug: string): NewsItem | undefined {
+  return DEMO_NEWS.find((n) => n.slug === slug);
+}
+
+export function getFeaturedNews(): NewsItem | undefined {
+  return DEMO_NEWS.find((n) => n.featured);
+}
