@@ -8,8 +8,8 @@ import { cn } from '@/lib/utils';
 interface ImageWithFallbackProps {
   src?: string | null;
   alt: string;
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
   className?: string;
   fallbackText?: string;
   priority?: boolean;

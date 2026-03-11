@@ -78,6 +78,8 @@
     },
     "noResults": "Yangilik topilmadi",
     "loadMore": "Ko'proq yuklash",
+    "relatedArticles": "O'xshash maqolalar",
+    "backToNews": "Yangiliklarga qaytish",
     "preview": {
       "title": "So'nggi Yangiliklar",
       "subtitle": "Platformamizdan eng so'nggi yangiliklar va aksiyalar"
@@ -97,15 +99,23 @@
     "values": {
       "title": "Bizning Qadriyatlarimiz",
       "trust": "Ishonchlilik",
+      "trustDesc": "Har bir hamkorlik shaffoflik va to'liq ishonch asosida qurilgan.",
       "speed": "Tezkorlik",
+      "speedDesc": "Buyurtmangiz eng qisqa muddatda yetkazib beriladi.",
       "quality": "Sifat",
-      "innovation": "Innovatsiya"
+      "qualityDesc": "Faqat tekshirilgan va sertifikatlangan mahsulotlar katalogda.",
+      "innovation": "Innovatsiya",
+      "innovationDesc": "Zamonaviy texnologiyalar orqali xaridni yangi bosqichga olib chiqamiz."
     },
     "stats": {
       "products": "Mahsulotlar",
       "clients": "Mijozlar",
       "years": "Yillik tajriba",
       "cities": "Shaharlar"
+    },
+    "story": {
+      "title": "Bizning Tariximiz",
+      "text": "AR Market 2022-yilda Toshkentda tashkil etilgan. Maqsadimiz oddiy edi — O'zbekistondagi xaridni raqamlashtirish. Bugun biz 100,000 dan ortiq mahsulot, 500 dan ortiq ishonchli etkazib beruvchi va minglab mamnun mijozlar bilan ishlayapmiz. Har kuni yangi hamkorlar, yangi imkoniyatlar va yangi muvaffaqiyatlar."
     }
   },
   "contacts": {
@@ -114,15 +124,32 @@
     "phone": "Telefon",
     "telegram": "Telegram",
     "address": "Manzil",
+    "addressValue": "Toshkent sh., Chilonzor tumani, Bunyodkor ko'chasi 12",
     "hours": "Ish vaqti",
-    "hoursValue": "Dushanba–Shanba: 9:00–18:00",
+    "hoursValue": "Dushanba–Shanba: 9:00–21:00",
+    "mapTitle": "Bizning manzilimiz",
+    "social": {
+      "title": "Ijtimoiy tarmoqlar",
+      "telegram": "Telegram",
+      "instagram": "Instagram",
+      "youtube": "YouTube",
+      "facebook": "Facebook"
+    },
+    "partners": {
+      "title": "Bizning Hamkorlar",
+      "subtitle": "Biz bilan ishlaydigan kompaniyalar"
+    },
     "form": {
       "title": "Xabar Yuborish",
       "name": "Ismingiz",
+      "namePlaceholder": "To'liq ismingiz",
       "phone": "Telefon raqamingiz",
+      "phonePlaceholder": "+998 90 000 00 00",
       "message": "Xabaringiz",
+      "messagePlaceholder": "Savolingiz yoki taklifingizni yozing...",
       "send": "Yuborish",
-      "success": "Xabaringiz muvaffaqiyatli yuborildi!",
+      "sending": "Yuborilmoqda...",
+      "success": "Xabaringiz muvaffaqiyatli yuborildi! Tez orada siz bilan bog'lanamiz.",
       "error": "Xatolik yuz berdi. Qayta urinib ko'ring."
     }
   },

@@ -1,27 +1,23 @@
 import { setRequestLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
+import ProductsClient from '@/components/sections/products/ProductsClient';
 
 interface ProductsPageProps {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ category?: string }>;
 }
 
 export async function generateMetadata({ params }: ProductsPageProps): Promise<Metadata> {
   const { locale } = await params;
-  return {
-    title: locale === 'ru' ? 'Товары' : 'Mahsulotlar',
-  };
+  const t = await getTranslations({ locale, namespace: 'products' });
+  return { title: t('title') };
 }
 
-export default async function ProductsPage({ params }: ProductsPageProps) {
+export default async function ProductsPage({ params, searchParams }: ProductsPageProps) {
   const { locale } = await params;
+  const { category } = await searchParams;
   setRequestLocale(locale);
 
-  return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      {/* TODO: ProductFilters + ProductGrid — implementation in pages phase */}
-      <h1 className="text-2xl font-bold text-foreground">
-        {locale === 'ru' ? 'Товары' : 'Mahsulotlar'}
-      </h1>
-    </div>
-  );
+  return <ProductsClient initialCategory={category} />;
 }

@@ -9,7 +9,9 @@
       "Bash(cd D:/Projects/UNBOX/armarket && npm install clsx tailwind-merge)",
       "Bash(cd D:/Projects/UNBOX/armarket && npm run build 2>&1 | tail -60)",
       "Bash(cd D:/Projects/UNBOX/armarket && cp src/middleware.ts src/proxy.ts && rm src/middleware.ts)",
-      "Bash(cd D:/Projects/UNBOX/armarket && npm run build 2>&1 | tail -30)"
+      "Bash(cd D:/Projects/UNBOX/armarket && npm run build 2>&1 | tail -30)",
+      "Bash(cd D:/Projects/UNBOX/armarket && npm run build 2>&1 | tail -50)",
+      "Bash(cd D:/Projects/UNBOX/armarket && npm run build 2>&1 | tail -40)"
     ]
   }
 }

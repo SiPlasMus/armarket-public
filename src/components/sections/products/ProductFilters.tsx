@@ -1,20 +1,369 @@
 'use client';
-// TODO: Implement in products page phase
-// Planned: search input, sort selector, category filter, mobile bottom-sheet panel
 
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslations, useLocale } from 'next-intl';
+import { Search, SlidersHorizontal, X, Check, ChevronDown } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
+import { DEMO_CATEGORIES } from '@/lib/demo-data';
+import { cn } from '@/lib/utils';
+import { slideInBottom, backdropVariants } from '@/lib/animations';
 import type { ProductFilters as Filters, SortOption } from '@/types';
 
 interface ProductFiltersProps {
   filters: Filters;
   sort: SortOption;
+  total: number;
   onFiltersChange: (f: Filters) => void;
   onSortChange: (s: SortOption) => void;
 }
 
-export function ProductFilters({}: ProductFiltersProps) {
-  return (
-    <div className="flex items-center gap-3 flex-wrap">
-      {/* Implementation in pages phase */}
+const SORT_KEYS: SortOption[] = ['popular', 'newest', 'priceAsc', 'priceDesc'];
+
+export function ProductFilters({
+  filters,
+  sort,
+  total,
+  onFiltersChange,
+  onSortChange,
+}: ProductFiltersProps) {
+  const t  = useTranslations('products');
+  const tc = useTranslations('common');
+  const locale = useLocale() as 'uz' | 'ru';
+
+  const [searchInput, setSearchInput] = useState(filters.search ?? '');
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Debounce search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onFiltersChange({ ...filters, search: searchInput });
+    }, 320);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchInput]);
+
+  const activeFilterCount = [filters.categoryId, filters.inStock].filter(Boolean).length;
+
+  function setCategory(id: string | undefined) {
+    onFiltersChange({ ...filters, categoryId: id });
+  }
+  function toggleInStock() {
+    onFiltersChange({ ...filters, inStock: !filters.inStock });
+  }
+  function clearAll() {
+    setSearchInput('');
+    onFiltersChange({ search: '', categoryId: undefined, inStock: false });
+  }
+
+  const hasActive = !!(filters.search || filters.categoryId || filters.inStock);
+
+  // ─── Shared: category chip row ────────────────────────────────────────────
+  const CategoryChips = () => (
+    <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
+      {/* "All" chip */}
+      <button
+        onClick={() => setCategory(undefined)}
+        className={cn(
+          'shrink-0 px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors duration-150',
+          !filters.categoryId
+            ? 'bg-brand text-brand-fg'
+            : 'bg-surface-alt border border-border text-foreground-muted hover:text-foreground hover:border-brand/30'
+        )}
+      >
+        {tc('all')}
+      </button>
+      {DEMO_CATEGORIES.map((cat) => {
+        const name = locale === 'ru' ? cat.nameRu : cat.name;
+        const active = filters.categoryId === cat.id;
+        return (
+          <button
+            key={cat.id}
+            onClick={() => setCategory(active ? undefined : cat.id)}
+            className={cn(
+              'shrink-0 px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors duration-150 flex items-center gap-1.5',
+              active
+                ? 'bg-brand text-brand-fg'
+                : 'bg-surface-alt border border-border text-foreground-muted hover:text-foreground hover:border-brand/30'
+            )}
+          >
+            {active && <Check className="h-3 w-3" />}
+            {name}
+          </button>
+        );
+      })}
     </div>
+  );
+
+  return (
+    <>
+      {/* ── Top bar ─────────────────────────────────────────────────────── */}
+      <div className="space-y-3">
+        {/* Row 1: Search + filter controls */}
+        <div className="flex items-center gap-2">
+          {/* Search */}
+          <div className="relative flex-1">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground-muted pointer-events-none" />
+            <input
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder={t('search')}
+              className={cn(
+                'w-full h-10 pl-10 pr-4 rounded-xl text-sm',
+                'bg-surface-alt border border-border text-foreground placeholder:text-foreground-muted',
+                'hover:border-brand/30 focus:border-brand focus:outline-none focus:ring-2 focus:ring-[var(--ring)]',
+                'transition-colors duration-150'
+              )}
+            />
+            {searchInput && (
+              <button
+                onClick={() => setSearchInput('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground-muted hover:text-foreground"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
+
+          {/* Mobile: Filter button */}
+          <button
+            onClick={() => setMobileOpen(true)}
+            className={cn(
+              'md:hidden relative flex items-center gap-1.5 h-10 px-3.5 rounded-xl text-sm font-medium',
+              'border border-border bg-surface-alt text-foreground-muted hover:text-foreground',
+              'transition-colors duration-150'
+            )}
+          >
+            <SlidersHorizontal className="h-4 w-4" />
+            {activeFilterCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 h-4.5 w-4.5 flex items-center justify-center rounded-full bg-brand text-brand-fg text-[10px] font-bold">
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
+
+          {/* Desktop: Sort + In-Stock */}
+          <div className="hidden md:flex items-center gap-2">
+            {/* In stock toggle */}
+            <button
+              onClick={toggleInStock}
+              className={cn(
+                'flex items-center gap-2 h-10 px-3.5 rounded-xl text-sm font-medium border transition-colors duration-150',
+                filters.inStock
+                  ? 'bg-brand/10 border-brand/40 text-brand'
+                  : 'bg-surface-alt border-border text-foreground-muted hover:text-foreground hover:border-brand/30'
+              )}
+            >
+              <span
+                className={cn(
+                  'h-4 w-4 rounded flex items-center justify-center border transition-colors',
+                  filters.inStock ? 'bg-brand border-brand' : 'border-border'
+                )}
+              >
+                {filters.inStock && <Check className="h-2.5 w-2.5 text-white" />}
+              </span>
+              {tc('inStock')}
+            </button>
+
+            {/* Sort select */}
+            <div className="relative">
+              <select
+                value={sort}
+                onChange={(e) => onSortChange(e.target.value as SortOption)}
+                className={cn(
+                  'h-10 pl-3 pr-8 rounded-xl text-sm appearance-none cursor-pointer',
+                  'bg-surface-alt border border-border text-foreground',
+                  'hover:border-brand/30 focus:outline-none focus:ring-2 focus:ring-[var(--ring)]',
+                  'transition-colors duration-150'
+                )}
+              >
+                {SORT_KEYS.map((k) => (
+                  <option key={k} value={k}>{t(`sortOptions.${k}`)}</option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-foreground-muted pointer-events-none" />
+            </div>
+          </div>
+        </div>
+
+        {/* Row 2: Category chips (all screens) */}
+        <CategoryChips />
+
+        {/* Row 3: Result count + clear */}
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-foreground-muted">
+            {locale === 'ru' ? `${total} товаров` : `${total} ta mahsulot`}
+          </p>
+          {hasActive && (
+            <button
+              onClick={clearAll}
+              className="flex items-center gap-1 text-xs text-brand hover:underline"
+            >
+              <X className="h-3 w-3" />
+              {locale === 'ru' ? 'Сбросить' : 'Tozalash'}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* ── Mobile filter bottom sheet ───────────────────────────────────── */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <>
+            <motion.div
+              key="filter-backdrop"
+              variants={backdropVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+              onClick={() => setMobileOpen(false)}
+            />
+            <motion.div
+              key="filter-panel"
+              variants={slideInBottom}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="fixed bottom-0 left-0 right-0 z-50 bg-surface-elevated rounded-t-3xl shadow-theme-lg max-h-[85vh] overflow-y-auto"
+            >
+              {/* Handle bar */}
+              <div className="flex justify-center pt-3 pb-1">
+                <div className="h-1 w-10 bg-border rounded-full" />
+              </div>
+
+              <div className="px-5 py-4 space-y-6">
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-foreground">
+                    {t('filterTitle')}
+                    {activeFilterCount > 0 && (
+                      <span className="ml-2 text-xs bg-brand text-brand-fg px-2 py-0.5 rounded-full">
+                        {activeFilterCount}
+                      </span>
+                    )}
+                  </h3>
+                  <button
+                    onClick={() => setMobileOpen(false)}
+                    className="p-2 rounded-xl text-foreground-muted hover:text-foreground hover:bg-surface-alt"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+
+                {/* Sort */}
+                <div>
+                  <p className="text-sm font-medium text-foreground mb-3">{t('sortLabel')}</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {SORT_KEYS.map((k) => (
+                      <button
+                        key={k}
+                        onClick={() => onSortChange(k)}
+                        className={cn(
+                          'px-3 py-2.5 rounded-xl text-sm font-medium border transition-colors duration-150',
+                          sort === k
+                            ? 'bg-brand text-brand-fg border-brand'
+                            : 'bg-surface-alt border-border text-foreground-muted'
+                        )}
+                      >
+                        {t(`sortOptions.${k}`)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Category */}
+                <div>
+                  <p className="text-sm font-medium text-foreground mb-3">
+                    {t('filters.category')}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => setCategory(undefined)}
+                      className={cn(
+                        'px-3.5 py-1.5 rounded-full text-sm font-medium border transition-colors duration-150',
+                        !filters.categoryId
+                          ? 'bg-brand text-brand-fg border-brand'
+                          : 'bg-surface-alt border-border text-foreground-muted'
+                      )}
+                    >
+                      {tc('all')}
+                    </button>
+                    {DEMO_CATEGORIES.map((cat) => {
+                      const name = locale === 'ru' ? cat.nameRu : cat.name;
+                      const active = filters.categoryId === cat.id;
+                      return (
+                        <button
+                          key={cat.id}
+                          onClick={() => setCategory(active ? undefined : cat.id)}
+                          className={cn(
+                            'flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium border transition-colors',
+                            active
+                              ? 'bg-brand text-brand-fg border-brand'
+                              : 'bg-surface-alt border-border text-foreground-muted'
+                          )}
+                        >
+                          {active && <Check className="h-3 w-3" />}
+                          {name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* In-stock toggle */}
+                <button
+                  onClick={toggleInStock}
+                  className={cn(
+                    'flex items-center justify-between w-full px-4 py-3.5 rounded-2xl border transition-colors',
+                    filters.inStock
+                      ? 'bg-brand/10 border-brand/40'
+                      : 'bg-surface-alt border-border'
+                  )}
+                >
+                  <span className={cn('text-sm font-medium', filters.inStock ? 'text-brand' : 'text-foreground')}>
+                    {tc('inStock')}
+                  </span>
+                  {/* Toggle pill */}
+                  <div
+                    className={cn(
+                      'relative w-10 h-6 rounded-full transition-colors duration-200',
+                      filters.inStock ? 'bg-brand' : 'bg-border'
+                    )}
+                  >
+                    <div
+                      className={cn(
+                        'absolute top-1 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200',
+                        filters.inStock ? 'translate-x-5' : 'translate-x-1'
+                      )}
+                    />
+                  </div>
+                </button>
+
+                {/* Actions */}
+                <div className="flex gap-2 pb-2">
+                  <Button
+                    variant="secondary"
+                    size="md"
+                    className="flex-1"
+                    onClick={clearAll}
+                  >
+                    {locale === 'ru' ? 'Сбросить' : 'Tozalash'}
+                  </Button>
+                  <Button
+                    variant="primary"
+                    size="md"
+                    className="flex-1"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    {locale === 'ru' ? `Показать (${total})` : `Ko'rsatish (${total})`}
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

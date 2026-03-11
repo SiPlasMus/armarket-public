@@ -298,6 +298,8 @@ export const DEMO_NEWS: NewsItem[] = [
     titleRu: 'Платформа AR Market обновилась — v2.0',
     summary: "Yangi interfeys, tezroq qidiruv va ko'proq mahsulot. Biz siz uchun yanada yaxshiroq platformani taqdim etamiz.",
     summaryRu: 'Новый интерфейс, более быстрый поиск и больше товаров. Мы представляем улучшенную платформу для вас.',
+    content: "AR Market 2.0 — bu faqat yangi dizayn emas, balki butunlay yangi tajriba. Biz so'nggi bir yil davomida platformamizni qayta qurdik: tezroq yuklanish, intuitiv interfeys va yangi filtrlash tizimi.\n\nYangilanishlar orasida eng muhimi — qidiruv tizimining sezilarli yaxshilanishi. Endi mahsulotlarni nom, kategoriya yoki narx bo'yicha millisekundlar ichida topish mumkin.\n\nMobil versiya ham to'liq qayta ishlandi. Har qanday qurilmadan qulay xarid qilishingiz mumkin. Bizning jamoamiz foydalanuvchilarning fikr-mulohazalarini hisobga olib, eng ko'p so'ralgan funksiyalarni qo'shdi.\n\nBundan tashqari, yangi to'lov usullari, yetkazib berish kuzatuvi va shaxsiy kabinet yangilandi. AR Market 2.0 bilan xarid qilish yanada oson va qulayroq!",
+    contentRu: "AR Market 2.0 — это не просто новый дизайн, а совершенно новый опыт. Мы перестраивали платформу последний год: более быстрая загрузка, интуитивный интерфейс и новая система фильтрации.\n\nСреди обновлений главное — заметное улучшение системы поиска. Теперь товары можно найти по названию, категории или цене за миллисекунды.\n\nМобильная версия также полностью переработана. Удобные покупки с любого устройства. Наша команда учла отзывы пользователей и добавила наиболее запрашиваемые функции.\n\nКроме того, обновлены способы оплаты, отслеживание доставки и личный кабинет. С AR Market 2.0 покупать стало ещё проще и удобнее!",
     image: undefined,
     date: '2025-12-15',
     category: 'update',
@@ -310,6 +312,8 @@ export const DEMO_NEWS: NewsItem[] = [
     titleRu: 'Скидка 20% на офисные товары — январская акция',
     summary: "Yanvarning oxirigacha barcha ofis jihozlariga 20% chegirma. Juda ko'p mahsulotlar aksiyaga tushdi.",
     summaryRu: 'До конца января скидка 20% на все офисные товары. Воспользуйтесь выгодным предложением.',
+    content: "Yanvar oyida AR Market barcha ofis jihozlariga 20% chegirma e'lon qilmoqda. Bu aksiya yanvarning 31-kunigacha davom etadi.\n\nAksiyaga kiruvchi mahsulotlar: stullar, stollar, shkaflar, printer va skanerlar, qog'oz va yozuv buyumlari, kompyuter va aksessuarlar.\n\nBugungi kun narxlari bilan kerakli jihozlarni xarid qiling va korxonangiz byudjetini tejang. Katta hajmdagi buyurtmalar uchun qo'shimcha chegirmalar mavjud.\n\nBatafsil ma'lumot uchun bizning menedjerlarimiz bilan bog'laning yoki platformada filtrni \"Aksiya\" holatiga o'rnating.",
+    contentRu: "В январе AR Market объявляет скидку 20% на все офисные товары. Акция действует до 31 января.\n\nТовары, участвующие в акции: кресла, столы, шкафы, принтеры и сканеры, бумага и канцелярия, компьютеры и аксессуары.\n\nПокупайте необходимое оборудование по сегодняшним ценам и экономьте бюджет вашей компании. Для крупных заказов предусмотрены дополнительные скидки.\n\nДля подробной информации свяжитесь с нашими менеджерами или установите фильтр «Акция» на платформе.",
     image: undefined,
     date: '2025-12-10',
     category: 'promo',
@@ -322,6 +326,8 @@ export const DEMO_NEWS: NewsItem[] = [
     titleRu: 'AR Market и Samsung Узбекистан заключили партнёрское соглашение',
     summary: "Endi Samsung mahsulotlarini AR Market orqali eng qulay narxda sotib olishingiz mumkin.",
     summaryRu: 'Теперь вы можете приобретать продукцию Samsung через AR Market по лучшим ценам.',
+    content: "AR Market va Samsung O'zbekiston o'rtasida rasmiy sheriklik bitimi imzolandi. Bu bitim mijozlarimizga Samsung mahsulotlarini eng qulay va ishonchli tarzda sotib olish imkoniyatini beradi.\n\nEndi platformamizda Samsung-ning to'liq assortimentini topishingiz mumkin: smartfonlar, planshetlar, televizorlar, maishiy texnika va biznes uchun mo'ljallangan mahsulotlar.\n\nSheriklik doirasida mijozlarimiz qo'shimcha kafolat va texnik xizmat ko'rsatish imkoniyatiga ega bo'ladilar. Samsung-ning rasmiy vakili sifatida biz to'liq hujjatlarni taqdim etamiz.\n\nBu hamkorlik AR Market-ning O'zbekiston bozorida ishonchli va katta platforma sifatida o'rnini mustahkamlashga yordam beradi.",
+    contentRu: "Между AR Market и Samsung Узбекистан подписано официальное партнёрское соглашение. Оно даёт нашим клиентам возможность покупать продукцию Samsung максимально удобно и надёжно.\n\nТеперь на нашей платформе вы найдёте полный ассортимент Samsung: смартфоны, планшеты, телевизоры, бытовую технику и продукцию для бизнеса.\n\nВ рамках партнёрства клиенты получают расширенную гарантию и техническое обслуживание. Как официальный представитель Samsung, мы предоставляем полный пакет документов.\n\nЭто сотрудничество укрепляет позиции AR Market как надёжной и крупной платформы на рынке Узбекистана.",
     image: undefined,
     date: '2025-11-28',
     category: 'news',
@@ -334,6 +340,8 @@ export const DEMO_NEWS: NewsItem[] = [
     titleRu: '100 000 товаров — новый рекорд в каталоге AR Market',
     summary: "Katalogimizda 100,000 dan ortiq mahsulot mavjud. Kerak bo'lgan hamma narsani bizdan toping.",
     summaryRu: 'В нашем каталоге уже более 100 000 товаров. Найдите всё необходимое у нас.',
+    content: "AR Market katalogi yangi rekordga erishdi — 100,000 dan ortiq mahsulot! Bu ko'rsatkich bizning jamoamizning ikki yillik mehnati natijasidir.\n\nKatalogimizda elektronika, ofis jihozlari, mebel, maishiy tovarlar, sanoat mahsulotlari va boshqa ko'plab kategoriyalar mavjud. Har kuni yangi mahsulotlar qo'shilmoqda.\n\nBu muvaffaqiyat bizning etkazib beruvchilarimiz va mijozlarimiz bilan hamkorligimiz tufayli mumkin bo'ldi. 500 dan ortiq ishonchli etkazib beruvchi bilan ishlayapmiz.\n\nKelgusi yilda yana 50,000 yangi mahsulot qo'shishni va yangi kategoriyalarni ochishni rejalashtirmoqdamiz. Kuzatib boring!",
+    contentRu: "Каталог AR Market достиг нового рекорда — более 100 000 товаров! Этот показатель — результат двухлетней работы нашей команды.\n\nВ каталоге представлены электроника, офисные товары, мебель, хозяйственные товары, промышленная продукция и многое другое. Каждый день добавляются новые товары.\n\nЭтот успех стал возможным благодаря партнёрству с нашими поставщиками и клиентами. Мы работаем с более чем 500 надёжными поставщиками.\n\nВ следующем году планируем добавить ещё 50 000 новых товаров и открыть новые категории. Следите за обновлениями!",
     image: undefined,
     date: '2025-11-15',
     category: 'news',
@@ -346,6 +354,8 @@ export const DEMO_NEWS: NewsItem[] = [
     titleRu: 'Акция к Навруз — большие скидки до 21 марта',
     summary: "Navro'z bayrami munosabati bilan yuzlab mahsulotlarga katta chegirmalar. Qulay xarid qiling!",
     summaryRu: 'В честь праздника Навруз скидки на сотни товаров. Делайте покупки выгодно!',
+    content: "Navro'z bayrami munosabati bilan AR Market katta aksiyani e'lon qilmoqda! 21 martgacha yuzlab mahsulotlarga 10% dan 40% gacha chegirmalar.\n\nAksiya kategoriyalari:\n- Maishiy texnika: 25% gacha chegirma\n- Ofis jihozlari: 30% gacha chegirma\n- Elektronika: 20% gacha chegirma\n- Mebel: 15% gacha chegirma\n\nBundan tashqari, 1,000,000 so'mdan ortiq buyurtmalar uchun bepul yetkazib berish xizmati taklif etilmoqda. Aksiya mahsulotlarini «Aksiya» belgisi bilan topishingiz mumkin.\n\nNavro'z muborak! Yaqinlaringizga mos sovg'alarni AR Market dan toping.",
+    contentRu: "В честь праздника Навруз AR Market объявляет большую акцию! До 21 марта скидки от 10% до 40% на сотни товаров.\n\nКатегории акции:\n- Бытовая техника: скидки до 25%\n- Офисные товары: скидки до 30%\n- Электроника: скидки до 20%\n- Мебель: скидки до 15%\n\nКроме того, для заказов свыше 1 000 000 сум предлагается бесплатная доставка. Товары акции можно найти по значку «Акция».\n\nС праздником Навруз! Найдите подходящие подарки для близких в AR Market.",
     image: undefined,
     date: '2025-11-01',
     category: 'promo',
@@ -358,6 +368,8 @@ export const DEMO_NEWS: NewsItem[] = [
     titleRu: "Новые способы оплаты: добавлены Click и Payme",
     summary: "Endi AR Market orqali Click va Payme to'lov tizimlari orqali qulay to'lov qilishingiz mumkin.",
     summaryRu: 'Теперь через AR Market можно оплачивать через платёжные системы Click и Payme.',
+    content: "AR Market to'lov tizimini kengaytirdi. Endi mijozlarimiz Click va Payme orqali qulay to'lov qilish imkoniyatiga ega.\n\nMavjud to'lov usullari:\n- Naqd pul\n- Bank kartasi (Uzcard, Humo)\n- Click (mobil to'lov)\n- Payme (mobil to'lov)\n- Bank o'tkazma (korporativ mijozlar uchun)\n\nMobil to'lov tizimlari orqali to'lash juda oddiy: savatga qo'shing, to'lov usulini tanlang va tasdiqlang. Barcha to'lovlar xavfsiz va himoyalangan.\n\nKelgusida boshqa to'lov usullarini ham qo'shishni rejalashtirmoqdamiz. Sizning quLayligingiz bizning ustuvorligimiz!",
+    contentRu: "AR Market расширил платёжную систему. Теперь наши клиенты могут удобно оплачивать через Click и Payme.\n\nДоступные способы оплаты:\n- Наличные\n- Банковская карта (Uzcard, Humo)\n- Click (мобильная оплата)\n- Payme (мобильная оплата)\n- Банковский перевод (для корпоративных клиентов)\n\nОплата через мобильные платёжные системы очень проста: добавьте в корзину, выберите способ оплаты и подтвердите. Все платежи безопасны и защищены.\n\nВ будущем планируем добавить и другие способы оплаты. Ваше удобство — наш приоритет!",
     image: undefined,
     date: '2025-10-20',
     category: 'update',
@@ -394,4 +406,10 @@ export function getNewsBySlug(slug: string): NewsItem | undefined {
 
 export function getFeaturedNews(): NewsItem | undefined {
   return DEMO_NEWS.find((n) => n.featured);
+}
+
+export function getRelatedNews(current: NewsItem, limit = 3): NewsItem[] {
+  return DEMO_NEWS.filter(
+    (n) => n.category === current.category && n.id !== current.id,
+  ).slice(0, limit);
 }
