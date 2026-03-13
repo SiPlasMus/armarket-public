@@ -1,9 +1,5 @@
-/**
- * Products API — placeholder
- * Replace function bodies with real fetch calls when backend is ready.
- */
 import type { Product, PaginatedResponse, ProductFilters, SortOption, PopularPeriod } from '@/types';
-import { DEMO_PRODUCTS, getProductsByPeriod, getProductsByCategory, getProductById } from '@/lib/demo-data';
+import { api } from '@/lib/api';
 
 export async function fetchProducts(params: {
   filters?: ProductFilters;
@@ -11,38 +7,26 @@ export async function fetchProducts(params: {
   page?: number;
   limit?: number;
 }): Promise<PaginatedResponse<Product>> {
-  const { page = 1, limit = 12 } = params;
-
-  // TODO: GET /api/products?page=&limit=&sort=&...filters
-  const start = (page - 1) * limit;
-  const data = DEMO_PRODUCTS.slice(start, start + limit);
-
-  return {
-    data,
-    total: DEMO_PRODUCTS.length,
-    page,
-    limit,
-    hasMore: start + limit < DEMO_PRODUCTS.length,
-  };
+  const { page = 1, limit = 12, sort, filters } = params;
+  const qs = new URLSearchParams({ page: String(page), limit: String(limit) });
+  if (sort) qs.set('sort', sort);
+  if (filters?.categoryId) qs.set('categoryId', filters.categoryId);
+  if (filters?.minPrice != null) qs.set('minPrice', String(filters.minPrice));
+  if (filters?.maxPrice != null) qs.set('maxPrice', String(filters.maxPrice));
+  if (filters?.inStock != null) qs.set('inStock', String(filters.inStock));
+  if (filters?.search) qs.set('search', filters.search);
+  return api<PaginatedResponse<Product>>(`/api/products?${qs}`);
 }
 
-export async function fetchPopularProducts(
-  period: PopularPeriod,
-  limit = 8
-): Promise<Product[]> {
-  // TODO: GET /api/products/popular?period=&limit=
-  return getProductsByPeriod(period, limit);
+export async function fetchPopularProducts(period: PopularPeriod, limit = 8): Promise<Product[]> {
+  return api<Product[]>(`/api/products/popular?period=${period}&limit=${limit}`);
 }
 
 export async function fetchProductById(id: string): Promise<Product | null> {
-  // TODO: GET /api/products/:id
-  return getProductById(id) ?? null;
+  return api<Product>(`/api/products/${encodeURIComponent(id)}`).catch(() => null);
 }
 
-export async function fetchProductsByCategory(
-  categoryId: string,
-  limit = 8
-): Promise<Product[]> {
-  // TODO: GET /api/products?categoryId=&limit=
-  return getProductsByCategory(categoryId, limit);
+export async function fetchProductsByCategory(categoryId: string, limit = 8): Promise<Product[]> {
+  return api<Product[]>(`/api/products?categoryId=${encodeURIComponent(categoryId)}&limit=${limit}`)
+    .then((res) => (Array.isArray(res) ? res : (res as PaginatedResponse<Product>).data));
 }

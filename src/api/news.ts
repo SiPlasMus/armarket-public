@@ -1,9 +1,5 @@
-/**
- * News API — placeholder
- * Replace function bodies with real fetch calls when backend is ready.
- */
 import type { NewsItem, NewsCategory, PaginatedResponse } from '@/types';
-import { DEMO_NEWS, getNewsBySlug, getFeaturedNews } from '@/lib/demo-data';
+import { api } from '@/lib/api';
 
 export async function fetchNews(params?: {
   category?: NewsCategory | 'all';
@@ -11,35 +7,19 @@ export async function fetchNews(params?: {
   limit?: number;
 }): Promise<PaginatedResponse<NewsItem>> {
   const { page = 1, limit = 6, category } = params ?? {};
-
-  // TODO: GET /api/news?page=&limit=&category=
-  const filtered =
-    !category || category === 'all'
-      ? DEMO_NEWS
-      : DEMO_NEWS.filter((n) => n.category === category);
-
-  const start = (page - 1) * limit;
-
-  return {
-    data: filtered.slice(start, start + limit),
-    total: filtered.length,
-    page,
-    limit,
-    hasMore: start + limit < filtered.length,
-  };
+  const qs = new URLSearchParams({ page: String(page), limit: String(limit) });
+  if (category && category !== 'all') qs.set('category', category);
+  return api<PaginatedResponse<NewsItem>>(`/api/news?${qs}`);
 }
 
 export async function fetchNewsBySlug(slug: string): Promise<NewsItem | null> {
-  // TODO: GET /api/news/:slug
-  return getNewsBySlug(slug) ?? null;
+  return api<NewsItem>(`/api/news/${encodeURIComponent(slug)}`).catch(() => null);
 }
 
 export async function fetchFeaturedNews(): Promise<NewsItem | null> {
-  // TODO: GET /api/news/featured
-  return getFeaturedNews() ?? null;
+  return api<NewsItem>('/api/news/featured').catch(() => null);
 }
 
 export async function fetchLatestNews(limit = 4): Promise<NewsItem[]> {
-  // TODO: GET /api/news?limit=&sort=date_desc
-  return DEMO_NEWS.slice(0, limit);
+  return api<NewsItem[]>(`/api/news/latest?limit=${limit}`);
 }
