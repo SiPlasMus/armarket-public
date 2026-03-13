@@ -7,10 +7,10 @@ import { ProductCard } from './ProductCard';
 import { ProductCardSkeleton, EmptyState } from '@/components/ui';
 import { staggerContainer } from '@/lib/animations';
 import { Button } from '@/components/ui/Button';
-import type { Product } from '@/types';
+import type { UiProductCard } from '@/lib/armarketApi';
 
 interface ProductGridProps {
-  products: Product[];
+  products: UiProductCard[];
   loading?: boolean;
   hasMore?: boolean;
   onLoadMore?: () => void;
@@ -29,7 +29,6 @@ export function ProductGrid({
   const t  = useTranslations('products');
   const tc = useTranslations('common');
 
-  // ── Loading state ───────────────────────────────────────────────────────
   if (loading) {
     return (
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -40,7 +39,6 @@ export function ProductGrid({
     );
   }
 
-  // ── Empty state ─────────────────────────────────────────────────────────
   if (products.length === 0) {
     return (
       <EmptyState
@@ -52,7 +50,6 @@ export function ProductGrid({
     );
   }
 
-  // ── Product grid ────────────────────────────────────────────────────────
   return (
     <div className="space-y-8">
       <motion.div
@@ -77,7 +74,6 @@ export function ProductGrid({
         </AnimatePresence>
       </motion.div>
 
-      {/* Load more */}
       {hasMore && onLoadMore && (
         <div className="flex justify-center pt-2">
           <Button
@@ -91,13 +87,9 @@ export function ProductGrid({
         </div>
       )}
 
-      {/* All shown indicator */}
       {!hasMore && products.length > 0 && (
         <p className="text-center text-sm text-foreground-muted py-2">
-          — {products.length} {' '}
-          {products.length === 1
-            ? (tc('noResults'))
-            : (tc('all').toLowerCase())} —
+          — {products.length} {tc('all').toLowerCase()} —
         </p>
       )}
     </div>

@@ -5,15 +5,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations, useLocale } from 'next-intl';
 import { Search, SlidersHorizontal, X, Check, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { DEMO_CATEGORIES } from '@/lib/demo-data';
 import { cn } from '@/lib/utils';
 import { slideInBottom, backdropVariants } from '@/lib/animations';
 import type { ProductFilters as Filters, SortOption } from '@/types';
+import type { UiCategory } from '@/lib/armarketApi';
 
 interface ProductFiltersProps {
   filters: Filters;
   sort: SortOption;
   total: number;
+  categories: UiCategory[];
   onFiltersChange: (f: Filters) => void;
   onSortChange: (s: SortOption) => void;
 }
@@ -24,62 +25,62 @@ export function ProductFilters({
   filters,
   sort,
   total,
+  categories,
   onFiltersChange,
   onSortChange,
 }: ProductFiltersProps) {
-  const t  = useTranslations('products');
-  const tc = useTranslations('common');
+  const t      = useTranslations('products');
+  const tc     = useTranslations('common');
   const locale = useLocale() as 'uz' | 'ru';
 
   const [searchInput, setSearchInput] = useState(filters.search ?? '');
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileOpen, setMobileOpen]   = useState(false);
 
-  // Debounce search
+  // Debounce search → call onFiltersChange after 320ms idle
   useEffect(() => {
     const timer = setTimeout(() => {
-      onFiltersChange({ ...filters, search: searchInput });
+      onFiltersChange({ ...filters, search: searchInput || undefined });
     }, 320);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchInput]);
 
-  const activeFilterCount = [filters.categoryId, filters.inStock].filter(Boolean).length;
+  const activeFilterCount = [filters.groupCode != null, filters.inStock].filter(Boolean).length;
 
-  function setCategory(id: string | undefined) {
-    onFiltersChange({ ...filters, categoryId: id });
+  function setGroup(groupCode: number | undefined) {
+    onFiltersChange({ ...filters, groupCode });
   }
   function toggleInStock() {
     onFiltersChange({ ...filters, inStock: !filters.inStock });
   }
   function clearAll() {
     setSearchInput('');
-    onFiltersChange({ search: '', categoryId: undefined, inStock: false });
+    onFiltersChange({ search: undefined, groupCode: undefined, inStock: false });
   }
 
-  const hasActive = !!(filters.search || filters.categoryId || filters.inStock);
+  const hasActive = !!(filters.search || filters.groupCode != null || filters.inStock);
 
   // ─── Shared: category chip row ────────────────────────────────────────────
   const CategoryChips = () => (
     <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
-      {/* "All" chip */}
       <button
-        onClick={() => setCategory(undefined)}
+        onClick={() => setGroup(undefined)}
         className={cn(
           'shrink-0 px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors duration-150',
-          !filters.categoryId
+          filters.groupCode == null
             ? 'bg-brand text-brand-fg'
             : 'bg-surface-alt border border-border text-foreground-muted hover:text-foreground hover:border-brand/30'
         )}
       >
         {tc('all')}
       </button>
-      {DEMO_CATEGORIES.map((cat) => {
-        const name = locale === 'ru' ? cat.nameRu : cat.name;
-        const active = filters.categoryId === cat.id;
+      {categories.map((cat) => {
+        const name   = locale === 'ru' ? cat.nameRu : cat.name;
+        const active = filters.groupCode === cat.groupCode;
         return (
           <button
-            key={cat.id}
-            onClick={() => setCategory(active ? undefined : cat.id)}
+            key={cat.groupCode}
+            onClick={() => setGroup(active ? undefined : cat.groupCode)}
             className={cn(
               'shrink-0 px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors duration-150 flex items-center gap-1.5',
               active
@@ -144,7 +145,6 @@ export function ProductFilters({
 
           {/* Desktop: Sort + In-Stock */}
           <div className="hidden md:flex items-center gap-2">
-            {/* In stock toggle */}
             <button
               onClick={toggleInStock}
               className={cn(
@@ -165,7 +165,6 @@ export function ProductFilters({
               {tc('inStock')}
             </button>
 
-            {/* Sort select */}
             <div className="relative">
               <select
                 value={sort}
@@ -186,8 +185,8 @@ export function ProductFilters({
           </div>
         </div>
 
-        {/* Row 2: Category chips (all screens) */}
-        <CategoryChips />
+        {/* Row 2: Category chips */}
+        {categories.length > 0 && <CategoryChips />}
 
         {/* Row 3: Result count + clear */}
         <div className="flex items-center justify-between">
@@ -227,13 +226,11 @@ export function ProductFilters({
               exit="exit"
               className="fixed bottom-0 left-0 right-0 z-50 bg-surface-elevated rounded-t-3xl shadow-theme-lg max-h-[85vh] overflow-y-auto"
             >
-              {/* Handle bar */}
               <div className="flex justify-center pt-3 pb-1">
                 <div className="h-1 w-10 bg-border rounded-full" />
               </div>
 
               <div className="px-5 py-4 space-y-6">
-                {/* Header */}
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold text-foreground">
                     {t('filterTitle')}
@@ -272,44 +269,46 @@ export function ProductFilters({
                   </div>
                 </div>
 
-                {/* Category */}
-                <div>
-                  <p className="text-sm font-medium text-foreground mb-3">
-                    {t('filters.category')}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      onClick={() => setCategory(undefined)}
-                      className={cn(
-                        'px-3.5 py-1.5 rounded-full text-sm font-medium border transition-colors duration-150',
-                        !filters.categoryId
-                          ? 'bg-brand text-brand-fg border-brand'
-                          : 'bg-surface-alt border-border text-foreground-muted'
-                      )}
-                    >
-                      {tc('all')}
-                    </button>
-                    {DEMO_CATEGORIES.map((cat) => {
-                      const name = locale === 'ru' ? cat.nameRu : cat.name;
-                      const active = filters.categoryId === cat.id;
-                      return (
-                        <button
-                          key={cat.id}
-                          onClick={() => setCategory(active ? undefined : cat.id)}
-                          className={cn(
-                            'flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium border transition-colors',
-                            active
-                              ? 'bg-brand text-brand-fg border-brand'
-                              : 'bg-surface-alt border-border text-foreground-muted'
-                          )}
-                        >
-                          {active && <Check className="h-3 w-3" />}
-                          {name}
-                        </button>
-                      );
-                    })}
+                {/* Category (only if available) */}
+                {categories.length > 0 && (
+                  <div>
+                    <p className="text-sm font-medium text-foreground mb-3">
+                      {t('filters.category')}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        onClick={() => setGroup(undefined)}
+                        className={cn(
+                          'px-3.5 py-1.5 rounded-full text-sm font-medium border transition-colors duration-150',
+                          filters.groupCode == null
+                            ? 'bg-brand text-brand-fg border-brand'
+                            : 'bg-surface-alt border-border text-foreground-muted'
+                        )}
+                      >
+                        {tc('all')}
+                      </button>
+                      {categories.map((cat) => {
+                        const name   = locale === 'ru' ? cat.nameRu : cat.name;
+                        const active = filters.groupCode === cat.groupCode;
+                        return (
+                          <button
+                            key={cat.groupCode}
+                            onClick={() => setGroup(active ? undefined : cat.groupCode)}
+                            className={cn(
+                              'flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium border transition-colors',
+                              active
+                                ? 'bg-brand text-brand-fg border-brand'
+                                : 'bg-surface-alt border-border text-foreground-muted'
+                            )}
+                          >
+                            {active && <Check className="h-3 w-3" />}
+                            {name}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* In-stock toggle */}
                 <button
@@ -324,7 +323,6 @@ export function ProductFilters({
                   <span className={cn('text-sm font-medium', filters.inStock ? 'text-brand' : 'text-foreground')}>
                     {tc('inStock')}
                   </span>
-                  {/* Toggle pill */}
                   <div
                     className={cn(
                       'relative w-10 h-6 rounded-full transition-colors duration-200',
@@ -342,20 +340,10 @@ export function ProductFilters({
 
                 {/* Actions */}
                 <div className="flex gap-2 pb-2">
-                  <Button
-                    variant="secondary"
-                    size="md"
-                    className="flex-1"
-                    onClick={clearAll}
-                  >
+                  <Button variant="secondary" size="md" className="flex-1" onClick={clearAll}>
                     {locale === 'ru' ? 'Сбросить' : 'Tozalash'}
                   </Button>
-                  <Button
-                    variant="primary"
-                    size="md"
-                    className="flex-1"
-                    onClick={() => setMobileOpen(false)}
-                  >
+                  <Button variant="primary" size="md" className="flex-1" onClick={() => setMobileOpen(false)}>
                     {locale === 'ru' ? `Показать (${total})` : `Ko'rsatish (${total})`}
                   </Button>
                 </div>

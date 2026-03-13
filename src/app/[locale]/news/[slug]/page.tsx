@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { ArrowLeft, Calendar } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
-import { getNewsBySlug, getRelatedNews, DEMO_NEWS } from '@/lib/demo-data';
+import { fetchNewsBySlug, fetchNews } from '@/api/news';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -15,51 +15,44 @@ interface NewsArticlePageProps {
   params: Promise<{ locale: string; slug: string }>;
 }
 
-export async function generateStaticParams() {
-  return DEMO_NEWS.map((n) => ({ slug: n.slug }));
-}
-
 export async function generateMetadata({ params }: NewsArticlePageProps): Promise<Metadata> {
   const { locale, slug } = await params;
-  const article = getNewsBySlug(slug);
+  const article = await fetchNewsBySlug(slug);
   if (!article) return {};
+  const isRu = locale === 'ru';
   return {
-    title: locale === 'ru' ? article.titleRu : article.title,
-    description: locale === 'ru' ? article.summaryRu : article.summary,
+    title:       isRu ? (article.titleRu   || article.title)   : article.title,
+    description: isRu ? (article.summaryRu || article.summary) : article.summary,
   };
 }
 
-const catVariants = {
-  news:   'brand',
-  promo:  'warning',
-  update: 'success',
-} as const;
-
+const catVariants = { news: 'brand', promo: 'warning', update: 'success' } as const;
 const catLabels: Record<string, { uz: string; ru: string }> = {
-  news:   { uz: 'Yangilik',     ru: 'Новость'     },
-  promo:  { uz: 'Aksiya',       ru: 'Акция'        },
-  update: { uz: 'Yangilanish',  ru: 'Обновление'  },
+  news:   { uz: 'Yangilik',    ru: 'Новость'    },
+  promo:  { uz: 'Aksiya',      ru: 'Акция'       },
+  update: { uz: 'Yangilanish', ru: 'Обновление' },
 };
 
 export default async function NewsArticlePage({ params }: NewsArticlePageProps) {
   const { locale, slug } = await params;
   setRequestLocale(locale);
 
-  const article = getNewsBySlug(slug);
+  const article = await fetchNewsBySlug(slug);
   if (!article) notFound();
 
   const t  = await getTranslations({ locale, namespace: 'news' });
-  const tc = await getTranslations({ locale, namespace: 'common' });
 
   const isRu    = locale === 'ru';
-  const title   = isRu ? article.titleRu   : article.title;
-  const summary = isRu ? article.summaryRu : article.summary;
-  const content = isRu ? article.contentRu : article.content;
-
+  const title   = isRu ? (article.titleRu   || article.title)   : article.title;
+  const summary = isRu ? (article.summaryRu || article.summary) : article.summary;
+  const content = isRu ? (article.contentRu || article.content) : article.content;
   const catLabel = catLabels[article.category]?.[isRu ? 'ru' : 'uz'] ?? article.category;
-  const related  = getRelatedNews(article, 3);
 
-  // Split content into paragraphs on double newlines
+  // Related: same category, excluding current
+  const relatedRes = await fetchNews({ category: article.category, limit: 4 }).catch(() => null);
+  const related = (relatedRes?.data ?? []).filter((n) => n.slug !== slug).slice(0, 3);
+
+  // Render content: split on double newlines, detect list blocks (lines starting with -)
   const paragraphs = content?.split('\n\n').filter(Boolean) ?? [];
 
   return (
@@ -78,7 +71,7 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
         <span className="text-foreground line-clamp-1">{title}</span>
       </nav>
 
-      {/* ── Article layout ──────────────────────────────────────────── */}
+      {/* ── Article ─────────────────────────────────────────────────── */}
       <div className="max-w-3xl mx-auto">
 
         {/* Hero image */}
@@ -91,16 +84,12 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
             className="object-cover"
             fallbackText={title}
           />
-          {/* Gradient overlay for visual depth */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
         </div>
 
-        {/* Meta row: badge + date */}
+        {/* Meta row */}
         <div className="flex items-center gap-3 mb-4">
-          <Badge
-            variant={catVariants[article.category as keyof typeof catVariants] ?? 'brand'}
-            size="md"
-          >
+          <Badge variant={catVariants[article.category as keyof typeof catVariants] ?? 'brand'} size="md">
             {catLabel}
           </Badge>
           <span className="flex items-center gap-1.5 text-sm text-foreground-muted">
@@ -123,7 +112,6 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
         {paragraphs.length > 0 ? (
           <div className="space-y-4 text-foreground leading-relaxed mb-10">
             {paragraphs.map((para, i) => {
-              // Detect list-like paragraphs (lines starting with -)
               const lines = para.split('\n');
               const isList = lines.length > 1 && lines.slice(1).every((l) => l.startsWith('-'));
               if (isList) {
@@ -148,14 +136,9 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
           <div className="mb-10" />
         )}
 
-        {/* Divider + Back button */}
+        {/* Back button */}
         <div className="border-t border-border pt-6">
-          <Button
-            variant="secondary"
-            size="md"
-            href="/news"
-            leftIcon={<ArrowLeft className="h-4 w-4" />}
-          >
+          <Button variant="secondary" size="md" href="/news" leftIcon={<ArrowLeft className="h-4 w-4" />}>
             {t('backToNews')}
           </Button>
         </div>

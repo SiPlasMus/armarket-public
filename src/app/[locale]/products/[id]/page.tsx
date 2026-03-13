@@ -1,12 +1,10 @@
 import { setRequestLocale } from 'next-intl/server';
-import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
-import { ArrowLeft, CheckCircle2, XCircle, Star } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, XCircle, Tag, Barcode, Box } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
-import { getProductById, DEMO_PRODUCTS, DEMO_CATEGORIES } from '@/lib/demo-data';
+import { fetchProductById, fetchProducts } from '@/lib/armarketApi';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
-import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { RelatedProducts } from '@/components/sections/products/RelatedProducts';
 import { formatPrice } from '@/lib/utils';
@@ -17,48 +15,59 @@ interface ProductDetailPageProps {
 
 export async function generateMetadata({ params }: ProductDetailPageProps): Promise<Metadata> {
   const { locale, id } = await params;
-  const product = getProductById(id);
+  const product = await fetchProductById(id);
   if (!product) return {};
-  return {
-    title: locale === 'ru' ? product.nameRu : product.name,
-  };
+  return { title: locale === 'ru' ? product.nameRu : product.name };
 }
-
-const badgeVariants = {
-  new:     'success',
-  popular: 'brand',
-  sale:    'warning',
-  limited: 'muted',
-} as const;
 
 export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
   const { locale, id } = await params;
   setRequestLocale(locale);
 
-  const product = getProductById(id);
-  if (!product) notFound();
+  const product = await fetchProductById(id);
+
+  // Product not available — show friendly error instead of Next.js 404
+  if (!product) {
+    const t  = await getTranslations({ locale, namespace: 'products' });
+    const isRu = locale === 'ru';
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 flex flex-col items-center gap-6 text-center">
+        <p className="text-4xl">📦</p>
+        <h1 className="text-xl font-bold text-foreground">
+          {isRu ? 'Информация о товаре временно недоступна' : 'Mahsulot ma\'lumotlari vaqtincha mavjud emas'}
+        </h1>
+        <p className="text-foreground-muted text-sm max-w-sm">
+          {isRu
+            ? 'Попробуйте позже или вернитесь в каталог.'
+            : 'Keyinroq qayta urinib ko\'ring yoki katalogga qayting.'}
+        </p>
+        <Button variant="secondary" href="/products" leftIcon={<ArrowLeft className="h-4 w-4" />}>
+          {t('backToCatalog')}
+        </Button>
+      </div>
+    );
+  }
 
   const t  = await getTranslations({ locale, namespace: 'products' });
   const tc = await getTranslations({ locale, namespace: 'common' });
 
-  const isRu       = locale === 'ru';
-  const name        = isRu ? product.nameRu       : product.name;
-  const description = isRu ? product.descriptionRu : product.description;
-  const price       = formatPrice(product.price, locale as 'uz' | 'ru');
+  const isRu         = locale === 'ru';
+  const name         = isRu ? product.nameRu : product.name;
+  const categoryName = isRu ? product.categoryNameRu : product.categoryName;
+  const price        = formatPrice(product.price, locale as 'uz' | 'ru');
 
-  // Category label
-  const category = DEMO_CATEGORIES.find((c) => c.id === product.categoryId);
-  const categoryName = category ? (isRu ? category.nameRu : category.name) : '';
-
-  // Related products: same category, different product
-  const related = DEMO_PRODUCTS.filter(
-    (p) => p.categoryId === product.categoryId && p.id !== product.id
-  ).slice(0, 4);
+  // Related: same group, exclude current
+  const relatedRes = product.groupCode
+    ? await fetchProducts({ groupCode: product.groupCode, limit: 5 }).catch(() => null)
+    : null;
+  const related = (relatedRes?.products ?? [])
+    .filter((p) => p.id !== product.id)
+    .slice(0, 4);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-      {/* ── Breadcrumb + back ──────────────────────────────────────── */}
+      {/* ── Breadcrumb ─────────────────────────────────────────────── */}
       <nav className="flex items-center gap-2 text-sm text-foreground-muted mb-8">
         <Link href="/" className="hover:text-brand transition-colors">
           {isRu ? 'Главная' : 'Bosh sahifa'}
@@ -71,37 +80,40 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
         <span className="text-foreground line-clamp-1">{name}</span>
       </nav>
 
-      {/* ── Main product layout ─────────────────────────────────────── */}
-      <div className="grid lg:grid-cols-2 gap-10 lg:gap-16">
+      {/* ── Main layout — 2-col with image, 1-col without ─────────────── */}
+      <div className={product.images.length > 0 ? 'grid lg:grid-cols-2 gap-10 lg:gap-16' : ''}>
 
-        {/* Image */}
-        <div className="relative">
-          <div className="aspect-square rounded-3xl overflow-hidden bg-surface-alt border border-border shadow-theme-md">
-            <ImageWithFallback
-              src={product.image}
-              alt={name}
-              fill
-              priority
-              className="object-contain p-8"
-              fallbackText={name}
-            />
-          </div>
-
-          {/* Badge overlay on image */}
-          {product.badge && (
-            <div className="absolute top-4 left-4">
-              <Badge
-                variant={badgeVariants[product.badge as keyof typeof badgeVariants] ?? 'brand'}
-                size="md"
-              >
-                {tc(product.badge as 'new' | 'popular' | 'sale' | 'limited')}
-              </Badge>
+        {/* ── Image gallery (only when images exist from tax API) ─────── */}
+        {product.images.length > 0 && (
+          <div className="space-y-3">
+            <div className="relative aspect-square rounded-3xl overflow-hidden bg-surface-alt border border-border shadow-theme-md">
+              <ImageWithFallback
+                src={product.mainImage}
+                alt={name}
+                fill
+                priority
+                className="object-contain p-8"
+                fallbackText={name}
+              />
             </div>
-          )}
-        </div>
+            {product.images.length > 1 && (
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {product.images.map((src, i) => (
+                  <div
+                    key={i}
+                    className="shrink-0 h-16 w-16 rounded-xl overflow-hidden border border-border bg-surface-alt"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={src} alt={`${name} ${i + 1}`} className="h-full w-full object-contain p-1" />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
-        {/* Info panel */}
-        <div className="flex flex-col">
+        {/* ── Info panel ─────────────────────────────────────────────── */}
+        <div className={`flex flex-col${product.images.length === 0 ? ' max-w-2xl' : ''}`}>
           {/* Category */}
           {categoryName && (
             <p className="text-sm font-medium text-foreground-muted uppercase tracking-wider mb-2">
@@ -114,70 +126,96 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
             {name}
           </h1>
 
-          {/* Rating */}
-          {product.rating !== undefined && (
-            <div className="flex items-center gap-2 mb-4">
-              <div className="flex items-center gap-1">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star
-                    key={star}
-                    className={`h-4 w-4 ${
-                      star <= Math.round(product.rating!)
-                        ? 'text-yellow-400 fill-yellow-400'
-                        : 'text-border'
-                    }`}
-                  />
-                ))}
-              </div>
-              <span className="text-sm text-foreground-muted">
-                {product.rating.toFixed(1)}
-                {product.reviewCount && ` (${product.reviewCount})`}
-              </span>
-            </div>
-          )}
-
           {/* Price */}
           <div className="mb-5">
             <p className="text-3xl sm:text-4xl font-extrabold text-brand">{price}</p>
+            <p className="text-xs text-foreground-muted mt-1">{product.currency}</p>
           </div>
 
-          {/* In-stock status */}
+          {/* Stock */}
           <div className="flex items-center gap-2 mb-6">
             {product.inStock ? (
               <>
                 <CheckCircle2 className="h-5 w-5 text-green-500" />
                 <span className="text-sm font-medium text-green-600 dark:text-green-400">
                   {tc('inStock')}
+                  {product.onHand > 0 && (
+                    <span className="text-foreground-muted font-normal ml-1">
+                      ({product.onHand})
+                    </span>
+                  )}
                 </span>
               </>
             ) : (
               <>
                 <XCircle className="h-5 w-5 text-foreground-muted" />
-                <span className="text-sm font-medium text-foreground-muted">
-                  {tc('outOfStock')}
-                </span>
+                <span className="text-sm font-medium text-foreground-muted">{tc('outOfStock')}</span>
               </>
             )}
           </div>
 
-          {/* Description */}
-          {description && (
-            <div className="mb-8 p-4 bg-surface-alt rounded-2xl border border-border">
-              <p className="text-sm font-medium text-foreground-muted mb-1">
-                {isRu ? 'Характеристики' : 'Xususiyatlar'}
-              </p>
-              <p className="text-foreground text-sm leading-relaxed">{description}</p>
+          {/* Meta info block */}
+          {(product.brandName || product.barcodes.length > 0 || product.attributeName || product.mxikName) && (
+            <div className="mb-6 p-4 bg-surface-alt rounded-2xl border border-border space-y-2.5">
+              {product.brandName && (
+                <div className="flex items-start gap-2.5">
+                  <Tag className="h-4 w-4 text-foreground-muted mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-xs text-foreground-muted">{isRu ? 'Бренд' : 'Brend'}</p>
+                    <p className="text-sm font-medium text-foreground">{product.brandName}</p>
+                  </div>
+                </div>
+              )}
+              {product.barcodes.length > 0 && (
+                <div className="flex items-start gap-2.5">
+                  <Barcode className="h-4 w-4 text-foreground-muted mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-xs text-foreground-muted">{isRu ? 'Штрихкод' : 'Barkod'}</p>
+                    <p className="text-sm font-medium text-foreground">{product.barcodes[0]}</p>
+                  </div>
+                </div>
+              )}
+              {product.mxikName && (
+                <div className="flex items-start gap-2.5">
+                  <Box className="h-4 w-4 text-foreground-muted mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-xs text-foreground-muted">MXIK</p>
+                    <p className="text-sm text-foreground leading-snug">{product.mxikName}</p>
+                  </div>
+                </div>
+              )}
+              {product.attributeName && (
+                <div className="flex items-start gap-2.5">
+                  <Box className="h-4 w-4 text-foreground-muted mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-xs text-foreground-muted">{isRu ? 'Атрибут' : 'Atribut'}</p>
+                    <p className="text-sm text-foreground">{product.attributeName}</p>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
-          {/* Divider */}
+          {/* Tax classification (collapsed details) */}
+          {(product.taxGroupName || product.taxClassName) && (
+            <details className="mb-6 group">
+              <summary className="text-sm text-foreground-muted cursor-pointer hover:text-foreground transition-colors list-none flex items-center gap-1.5">
+                <span className="text-xs border border-border rounded px-2 py-0.5">
+                  {isRu ? 'Налоговая классификация' : 'Soliq tasnifi'}
+                </span>
+              </summary>
+              <div className="mt-2 p-3 bg-surface-alt rounded-xl border border-border text-xs text-foreground-muted space-y-1">
+                {product.taxGroupName    && <p>{isRu ? 'Группа' : 'Guruh'}: {product.taxGroupName}</p>}
+                {product.taxClassName    && <p>{isRu ? 'Класс' : 'Sinf'}: {product.taxClassName}</p>}
+                {product.taxPositionName && <p>{isRu ? 'Позиция' : 'Pozitsiya'}: {product.taxPositionName}</p>}
+                {product.taxSubPositionName && <p>{isRu ? 'Подпозиция' : 'Kichik pozitsiya'}: {product.taxSubPositionName}</p>}
+              </div>
+            </details>
+          )}
+
+          {/* Actions */}
           <div className="mt-auto space-y-3">
-            <Button
-              variant="primary"
-              size="lg"
-              href="/contacts"
-              className="w-full"
-            >
+            <Button variant="primary" size="lg" href="/contacts" className="w-full">
               {isRu ? 'Связаться для заказа' : 'Buyurtma berish'}
             </Button>
             <Button
@@ -193,7 +231,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
         </div>
       </div>
 
-      {/* ── Related products ────────────────────────────────────────── */}
+      {/* ── Related products ─────────────────────────────────────────── */}
       <RelatedProducts products={related} />
     </div>
   );

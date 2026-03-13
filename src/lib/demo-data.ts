@@ -1,4 +1,8 @@
-import type { Product, Category, NewsItem } from '@/types';
+import type { NewsItem } from '@/types';
+
+// Legacy types kept locally since Product/Category were removed from @/types
+type Product = { id: string; name: string; nameRu: string; price: number; image?: string; categoryId: string; badge?: string; description?: string; descriptionRu?: string; inStock: boolean; rating?: number; reviewCount?: number; createdAt: string };
+type Category = { id: string; name: string; nameRu: string; icon: string; productCount?: number };
 
 // ─────────────────────────────────────────────
 // Categories

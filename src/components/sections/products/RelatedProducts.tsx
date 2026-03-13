@@ -4,10 +4,10 @@ import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { ProductCard } from './ProductCard';
 import { staggerContainer, fadeInUp, viewportOnce } from '@/lib/animations';
-import type { Product } from '@/types';
+import type { UiProductCard } from '@/lib/armarketApi';
 
 interface RelatedProductsProps {
-  products: Product[];
+  products: UiProductCard[];
 }
 
 export function RelatedProducts({ products }: RelatedProductsProps) {

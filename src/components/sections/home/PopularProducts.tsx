@@ -1,17 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { ArrowRight } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { ProductCard } from '@/components/sections/products/ProductCard';
-import { getProductsByPeriod } from '@/lib/demo-data';
+import { ProductCardSkeleton } from '@/components/ui';
+import { fetchPopularProducts } from '@/lib/armarketApi';
 import { viewportOnce, staggerContainer, fadeInUp } from '@/lib/animations';
 import type { PopularPeriod } from '@/types';
+import type { UiPopularProduct } from '@/lib/armarketApi';
 
 const PERIODS: { id: PopularPeriod; tKey: 'today' | 'thisWeek' | 'thisMonth' }[] = [
-  { id: 'today', tKey: 'today'     },
+  { id: 'day',   tKey: 'today'     },
   { id: 'week',  tKey: 'thisWeek'  },
   { id: 'month', tKey: 'thisMonth' },
 ];
@@ -19,15 +21,10 @@ const PERIODS: { id: PopularPeriod; tKey: 'today' | 'thisWeek' | 'thisMonth' }[]
 type CubicBezier = [number, number, number, number];
 const EASE_OUT: CubicBezier = [0.32, 0.72, 0, 1];
 
-// Slide variants — direction aware
 const slideVariants = {
-  enter: (dir: number) => ({ x: dir > 0 ? '20%' : '-20%', opacity: 0 }),
-  center: {
-    x: 0,
-    opacity: 1,
-    transition: { duration: 0.4, ease: EASE_OUT as CubicBezier },
-  },
-  exit: (dir: number) => ({
+  enter:  (dir: number) => ({ x: dir > 0 ? '20%' : '-20%', opacity: 0 }),
+  center: { x: 0, opacity: 1, transition: { duration: 0.4, ease: EASE_OUT as CubicBezier } },
+  exit:   (dir: number) => ({
     x: dir > 0 ? '-20%' : '20%',
     opacity: 0,
     transition: { duration: 0.25, ease: 'easeIn' as const },
@@ -35,11 +32,22 @@ const slideVariants = {
 };
 
 export default function PopularProducts() {
-  const t = useTranslations('common');
+  const t  = useTranslations('common');
   const tp = useTranslations('products.popular');
 
-  const [active, setActive]     = useState<PopularPeriod>('today');
+  const [active, setActive]       = useState<PopularPeriod>('week');
   const [direction, setDirection] = useState<1 | -1>(1);
+  const [products, setProducts]   = useState<UiPopularProduct[]>([]);
+  const [loading, setLoading]     = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    fetchPopularProducts({ period: active, limit: 8 })
+      .then((data) => { if (!cancelled) { setProducts(data); setLoading(false); } })
+      .catch(() => { if (!cancelled) { setProducts([]); setLoading(false); } });
+    return () => { cancelled = true; };
+  }, [active]);
 
   function switchPeriod(period: PopularPeriod) {
     const prevIdx = PERIODS.findIndex((p) => p.id === active);
@@ -48,8 +56,6 @@ export default function PopularProducts() {
     setDirection(nextIdx > prevIdx ? 1 : -1);
     setActive(period);
   }
-
-  const products = getProductsByPeriod(active, 8);
 
   return (
     <section className="py-16 sm:py-20 bg-surface overflow-hidden">
@@ -81,7 +87,7 @@ export default function PopularProducts() {
           </motion.div>
         </motion.div>
 
-        {/* ── Period tabs — spring-animated sliding pill ── */}
+        {/* ── Period tabs ── */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -99,7 +105,6 @@ export default function PopularProducts() {
                   color: active === period.id ? 'var(--brand-fg)' : 'var(--foreground-muted)',
                 }}
               >
-                {/* Spring-animated pill */}
                 {active === period.id && (
                   <motion.span
                     layoutId="popular-tab-pill"
@@ -114,30 +119,36 @@ export default function PopularProducts() {
           </div>
         </motion.div>
 
-        {/* ── Product grid — slide on tab change, cards crossfade in ── */}
+        {/* ── Product grid ── */}
         <div className="relative overflow-hidden">
-          <AnimatePresence custom={direction} mode="wait">
-            <motion.div
-              key={active}
-              custom={direction}
-              variants={slideVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"
-            >
-              {products.map((product, i) => (
-                <motion.div
-                  key={product.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.04, duration: 0.3 }}
-                >
-                  <ProductCard product={product} />
-                </motion.div>
-              ))}
-            </motion.div>
-          </AnimatePresence>
+          {loading ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {Array.from({ length: 8 }).map((_, i) => <ProductCardSkeleton key={i} />)}
+            </div>
+          ) : (
+            <AnimatePresence custom={direction} mode="wait">
+              <motion.div
+                key={active}
+                custom={direction}
+                variants={slideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"
+              >
+                {products.map((product, i) => (
+                  <motion.div
+                    key={product.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.04, duration: 0.3 }}
+                  >
+                    <ProductCard product={product} />
+                  </motion.div>
+                ))}
+              </motion.div>
+            </AnimatePresence>
+          )}
         </div>
       </div>
     </section>

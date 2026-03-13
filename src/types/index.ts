@@ -6,38 +6,10 @@ export type Theme = 'red' | 'green' | 'yellow' | 'dark';
 export type Locale = 'uz' | 'ru';
 
 // ─────────────────────────────────────────────
-// Product
+// Product UI types (from armarketApi)
 // ─────────────────────────────────────────────
 
-export type ProductBadge = 'new' | 'popular' | 'sale' | 'limited';
-
-export interface Product {
-  id: string;
-  name: string;
-  nameRu: string;
-  price: number; // in UZS
-  image?: string;
-  categoryId: string;
-  badge?: ProductBadge;
-  description?: string;
-  descriptionRu?: string;
-  inStock: boolean;
-  rating?: number;
-  reviewCount?: number;
-  createdAt: string;
-}
-
-// ─────────────────────────────────────────────
-// Category
-// ─────────────────────────────────────────────
-
-export interface Category {
-  id: string;
-  name: string;
-  nameRu: string;
-  icon: string; // lucide icon name
-  productCount?: number;
-}
+export type { UiProductCard, UiPopularProduct, UiProductDetails, UiCategory } from '@/lib/armarketApi';
 
 // ─────────────────────────────────────────────
 // News
@@ -64,17 +36,17 @@ export interface NewsItem {
 // Filters & Sort
 // ─────────────────────────────────────────────
 
+// Sort is frontend-only for now; backend doesn't yet support a sort param
 export type SortOption = 'popular' | 'newest' | 'priceAsc' | 'priceDesc';
 
 export interface ProductFilters {
-  categoryId?: string;
-  minPrice?: number;
-  maxPrice?: number;
+  groupCode?: number;
   inStock?: boolean;
   search?: string;
 }
 
-export type PopularPeriod = 'today' | 'week' | 'month';
+// day/week/month matches backend param values
+export type PopularPeriod = 'day' | 'week' | 'month';
 
 // ─────────────────────────────────────────────
 // Analytics

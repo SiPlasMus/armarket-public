@@ -5,7 +5,7 @@ import ProductsClient from '@/components/sections/products/ProductsClient';
 
 interface ProductsPageProps {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ groupCode?: string }>;
 }
 
 export async function generateMetadata({ params }: ProductsPageProps): Promise<Metadata> {
@@ -15,9 +15,11 @@ export async function generateMetadata({ params }: ProductsPageProps): Promise<M
 }
 
 export default async function ProductsPage({ params, searchParams }: ProductsPageProps) {
-  const { locale } = await params;
-  const { category } = await searchParams;
+  const { locale }    = await params;
+  const { groupCode } = await searchParams;
   setRequestLocale(locale);
 
-  return <ProductsClient initialCategory={category} />;
+  const initialGroupCode = groupCode ? parseInt(groupCode, 10) : undefined;
+
+  return <ProductsClient initialGroupCode={initialGroupCode} />;
 }

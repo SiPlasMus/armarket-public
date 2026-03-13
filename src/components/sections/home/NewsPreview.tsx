@@ -1,18 +1,30 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { ArrowRight } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { NewsCard } from '@/components/sections/news/NewsCard';
-import { DEMO_NEWS } from '@/lib/demo-data';
+import { fetchLatestNews } from '@/api/news';
 import { staggerContainer, fadeInUp, viewportOnce } from '@/lib/animations';
+import type { NewsItem } from '@/types';
+
+const SKELETON_COUNT = 3;
 
 export default function NewsPreview() {
   const t  = useTranslations('news');
   const tc = useTranslations('common');
 
-  const news = DEMO_NEWS.slice(0, 3);
+  const [news, setNews]       = useState<NewsItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchLatestNews(3)
+      .then(setNews)
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <section className="py-16 sm:py-20 bg-surface-alt">
@@ -45,19 +57,34 @@ export default function NewsPreview() {
         </motion.div>
 
         {/* News grid */}
-        <motion.div
-          variants={staggerContainer(0.1)}
-          initial="hidden"
-          whileInView="visible"
-          viewport={viewportOnce}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
-        >
-          {news.map((item, i) => (
-            <motion.div key={item.id} variants={fadeInUp}>
-              <NewsCard item={item} featured={i === 0} />
-            </motion.div>
-          ))}
-        </motion.div>
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {Array.from({ length: SKELETON_COUNT }).map((_, i) => (
+              <div key={i} className="rounded-2xl border border-border bg-surface-elevated overflow-hidden animate-pulse">
+                <div className="aspect-[16/9] bg-surface-alt" />
+                <div className="p-4 space-y-3">
+                  <div className="h-3 w-16 rounded bg-surface-alt" />
+                  <div className="h-4 w-full rounded bg-surface-alt" />
+                  <div className="h-4 w-3/4 rounded bg-surface-alt" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : news.length > 0 ? (
+          <motion.div
+            variants={staggerContainer(0.1)}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportOnce}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
+          >
+            {news.map((item, i) => (
+              <motion.div key={item.id} variants={fadeInUp}>
+                <NewsCard item={item} featured={i === 0} />
+              </motion.div>
+            ))}
+          </motion.div>
+        ) : null}
       </div>
     </section>
   );
