@@ -109,6 +109,9 @@
 
 html {
   scroll-behavior: smooth;
+  overscroll-behavior: none;
+  background-color: var(--surface); /* Prevents dark flash during Next.js page transitions in Telegram WebView */
+  color-scheme: light;             /* Prevents Telegram from force-applying dark mode */
 }
 
 body {
