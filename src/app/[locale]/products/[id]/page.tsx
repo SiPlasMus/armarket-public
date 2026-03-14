@@ -1,22 +1,60 @@
+import { cache } from 'react';
 import { setRequestLocale } from 'next-intl/server';
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { ArrowLeft, CheckCircle2, XCircle, Tag, Barcode, Box } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { fetchProductById, fetchProducts } from '@/lib/armarketApi';
+import type { UiProductDetails } from '@/lib/armarketApi';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 import { Button } from '@/components/ui/Button';
 import { RelatedProducts } from '@/components/sections/products/RelatedProducts';
 import { formatPrice } from '@/lib/utils';
 
+// cache() deduplicates calls within the same render pass —
+// generateMetadata and the page component share one fetch instead of two.
+const getProduct = cache(fetchProductById);
+
 interface ProductDetailPageProps {
   params: Promise<{ locale: string; id: string }>;
 }
 
+/** When the detail endpoint fails (Tax API 500), fall back to basic list data. */
+async function getProductWithFallback(
+  id: string,
+): Promise<{ product: UiProductDetails; basicOnly: boolean } | null> {
+  const full = await getProduct(id);
+  if (full) return { product: full, basicOnly: false };
+
+  // Detail endpoint failed — try to find the item in the product list
+  const res = await fetchProducts({ search: id, limit: 20 }).catch(() => null);
+  const card = res?.products.find((p) => p.id === id);
+  if (!card) return null;
+
+  return {
+    basicOnly: true,
+    product: {
+      ...card,
+      images:              [],
+      mainImage:           card.image,
+      mxikCode:            null,
+      mxikName:            null,
+      brandName:           null,
+      internationalCode:   null,
+      attributeName:       null,
+      taxGroupName:        null,
+      taxClassName:        null,
+      taxPositionName:     null,
+      taxSubPositionName:  null,
+    },
+  };
+}
+
 export async function generateMetadata({ params }: ProductDetailPageProps): Promise<Metadata> {
   const { locale, id } = await params;
-  const product = await fetchProductById(id);
-  if (!product) return {};
+  const result = await getProductWithFallback(id);
+  if (!result) return {};
+  const { product } = result;
   return { title: locale === 'ru' ? product.nameRu : product.name };
 }
 
@@ -24,22 +62,21 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
   const { locale, id } = await params;
   setRequestLocale(locale);
 
-  const product = await fetchProductById(id);
+  const result = await getProductWithFallback(id);
 
-  // Product not available — show friendly error instead of Next.js 404
-  if (!product) {
-    const t  = await getTranslations({ locale, namespace: 'products' });
+  if (!result) {
+    const t = await getTranslations({ locale, namespace: 'products' });
     const isRu = locale === 'ru';
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 flex flex-col items-center gap-6 text-center">
         <p className="text-4xl">📦</p>
         <h1 className="text-xl font-bold text-foreground">
-          {isRu ? 'Информация о товаре временно недоступна' : 'Mahsulot ma\'lumotlari vaqtincha mavjud emas'}
+          {isRu ? 'Информация о товаре временно недоступна' : "Mahsulot ma'lumotlari vaqtincha mavjud emas"}
         </h1>
         <p className="text-foreground-muted text-sm max-w-sm">
           {isRu
             ? 'Попробуйте позже или вернитесь в каталог.'
-            : 'Keyinroq qayta urinib ko\'ring yoki katalogga qayting.'}
+            : "Keyinroq qayta urinib ko'ring yoki katalogga qayting."}
         </p>
         <Button variant="secondary" href="/products" leftIcon={<ArrowLeft className="h-4 w-4" />}>
           {t('backToCatalog')}
@@ -47,6 +84,8 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
       </div>
     );
   }
+
+  const { product, basicOnly } = result;
 
   const t  = await getTranslations({ locale, namespace: 'products' });
   const tc = await getTranslations({ locale, namespace: 'common' });
@@ -79,6 +118,15 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
         <span>/</span>
         <span className="text-foreground line-clamp-1">{name}</span>
       </nav>
+
+      {/* ── Partial data notice ─────────────────────────────────────── */}
+      {basicOnly && (
+        <div className="mb-6 px-4 py-3 rounded-2xl bg-surface-alt border border-border text-sm text-foreground-muted">
+          {isRu
+            ? 'Расширенная информация о товаре временно недоступна. Показаны основные данные.'
+            : "Mahsulot haqida batafsil ma'lumot vaqtincha mavjud emas. Asosiy ma'lumotlar ko'rsatilmoqda."}
+        </div>
+      )}
 
       {/* ── Main layout — 2-col with image, 1-col without ─────────────── */}
       <div className={product.images.length > 0 ? 'grid lg:grid-cols-2 gap-10 lg:gap-16' : ''}>
@@ -132,30 +180,32 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
             <p className="text-xs text-foreground-muted mt-1">{product.currency}</p>
           </div>
 
-          {/* Stock */}
-          <div className="flex items-center gap-2 mb-6">
-            {product.inStock ? (
-              <>
-                <CheckCircle2 className="h-5 w-5 text-green-500" />
-                <span className="text-sm font-medium text-green-600 dark:text-green-400">
-                  {tc('inStock')}
-                  {product.onHand > 0 && (
-                    <span className="text-foreground-muted font-normal ml-1">
-                      ({product.onHand})
-                    </span>
-                  )}
-                </span>
-              </>
-            ) : (
-              <>
-                <XCircle className="h-5 w-5 text-foreground-muted" />
-                <span className="text-sm font-medium text-foreground-muted">{tc('outOfStock')}</span>
-              </>
-            )}
-          </div>
+          {/* Stock — hidden for basic-only items */}
+          {!basicOnly && (
+            <div className="flex items-center gap-2 mb-6">
+              {product.inStock ? (
+                <>
+                  <CheckCircle2 className="h-5 w-5 text-green-500" />
+                  <span className="text-sm font-medium text-green-600 dark:text-green-400">
+                    {tc('inStock')}
+                    {product.onHand > 0 && (
+                      <span className="text-foreground-muted font-normal ml-1">
+                        ({product.onHand})
+                      </span>
+                    )}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <XCircle className="h-5 w-5 text-foreground-muted" />
+                  <span className="text-sm font-medium text-foreground-muted">{tc('outOfStock')}</span>
+                </>
+              )}
+            </div>
+          )}
 
           {/* Meta info block */}
-          {(product.brandName || product.barcodes.length > 0 || product.attributeName || product.mxikName) && (
+          {(product.brandName || (!basicOnly && product.barcodes.length > 0) || product.attributeName || product.mxikName) && (
             <div className="mb-6 p-4 bg-surface-alt rounded-2xl border border-border space-y-2.5">
               {product.brandName && (
                 <div className="flex items-start gap-2.5">
@@ -166,7 +216,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
                   </div>
                 </div>
               )}
-              {product.barcodes.length > 0 && (
+              {!basicOnly && product.barcodes.length > 0 && (
                 <div className="flex items-start gap-2.5">
                   <Barcode className="h-4 w-4 text-foreground-muted mt-0.5 shrink-0" />
                   <div>
@@ -205,9 +255,9 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
                 </span>
               </summary>
               <div className="mt-2 p-3 bg-surface-alt rounded-xl border border-border text-xs text-foreground-muted space-y-1">
-                {product.taxGroupName    && <p>{isRu ? 'Группа' : 'Guruh'}: {product.taxGroupName}</p>}
-                {product.taxClassName    && <p>{isRu ? 'Класс' : 'Sinf'}: {product.taxClassName}</p>}
-                {product.taxPositionName && <p>{isRu ? 'Позиция' : 'Pozitsiya'}: {product.taxPositionName}</p>}
+                {product.taxGroupName       && <p>{isRu ? 'Группа' : 'Guruh'}: {product.taxGroupName}</p>}
+                {product.taxClassName       && <p>{isRu ? 'Класс' : 'Sinf'}: {product.taxClassName}</p>}
+                {product.taxPositionName    && <p>{isRu ? 'Позиция' : 'Pozitsiya'}: {product.taxPositionName}</p>}
                 {product.taxSubPositionName && <p>{isRu ? 'Подпозиция' : 'Kichik pozitsiya'}: {product.taxSubPositionName}</p>}
               </div>
             </details>

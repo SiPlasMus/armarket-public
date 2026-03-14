@@ -4,8 +4,7 @@ import { motion } from 'framer-motion';
 import { useTranslations, useLocale } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
-import { Button } from '@/components/ui/Button';
-import { formatPrice } from '@/lib/utils';
+import { cn, formatPrice } from '@/lib/utils';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import type { UiProductCard } from '@/lib/armarketApi';
 
@@ -31,15 +30,19 @@ export function ProductCard({ product }: ProductCardProps) {
     <motion.article
       whileHover={{ y: -4 }}
       transition={{ duration: 0.22, ease: [0, 0, 0.2, 1] }}
-      className="group flex flex-col bg-surface-elevated border border-border rounded-2xl overflow-hidden shadow-theme-sm hover:shadow-theme-md transition-shadow duration-200"
+      className="group relative flex flex-col bg-surface-elevated border border-border rounded-2xl overflow-hidden shadow-theme-sm hover:shadow-theme-md transition-shadow duration-200"
     >
+      {/* Stretched link — makes the entire card tappable on mobile */}
+      <Link
+        href={`/products/${product.id}`}
+        onClick={handleClick}
+        className="absolute inset-0 z-10 rounded-2xl focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:outline-none"
+        aria-label={name}
+      />
+
       {/* ── Image (only for items with 478* barcodes) ── */}
       {showImage && (
-        <Link
-          href={`/products/${product.id}`}
-          onClick={handleClick}
-          className="relative block aspect-[4/3] overflow-hidden bg-surface-alt"
-        >
+        <div className="relative aspect-[4/3] overflow-hidden bg-surface-alt">
           <ImageWithFallback
             src={product.image}
             alt={name}
@@ -54,7 +57,7 @@ export function ProductCard({ product }: ProductCardProps) {
               </span>
             </div>
           )}
-        </Link>
+        </div>
       )}
 
       {/* ── Body ──────────────────────────── */}
@@ -65,24 +68,20 @@ export function ProductCard({ product }: ProductCardProps) {
           </p>
         )}
 
-        <Link
-          href={`/products/${product.id}`}
-          onClick={handleClick}
-          className="text-foreground font-medium text-sm leading-snug line-clamp-2 hover:text-brand transition-colors mb-2"
-        >
+        <p className="text-foreground font-medium text-sm leading-snug line-clamp-2 group-hover:text-brand transition-colors mb-2">
           {name}
-        </Link>
+        </p>
 
         <div className="mt-auto space-y-2.5">
           <p className="text-brand font-bold text-base leading-none">{price}</p>
-          <Button
-            variant="secondary"
-            size="sm"
-            href={`/products/${product.id}`}
-            className="w-full"
-          >
+          {/* Visual "details" row — card's stretched link handles navigation */}
+          <div className={cn(
+            'w-full inline-flex items-center justify-center font-medium text-sm h-8 px-3 rounded-xl',
+            'bg-surface-alt text-foreground border border-border',
+            'group-hover:bg-border transition-colors duration-200',
+          )}>
             {t('details')}
-          </Button>
+          </div>
         </div>
       </div>
     </motion.article>

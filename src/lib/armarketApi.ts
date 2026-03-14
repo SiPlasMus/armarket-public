@@ -225,7 +225,9 @@ export async function fetchProductById(itemCode: string): Promise<UiProductDetai
     // Genuine 404 → return null (page will show not-found)
     // Any other error → return null but don't escalate (show graceful error in page)
     const msg = err instanceof Error ? err.message : '';
-    if (!msg.includes('404')) {
+    // Backend returns 500 (instead of 404) when Tax API finds no data for a barcode
+    const isNotFound = msg.includes('404') || msg.includes('not data found');
+    if (!isNotFound) {
       console.error('[fetchProductById] Backend error for', itemCode, msg);
     }
     return null;
