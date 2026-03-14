@@ -31,7 +31,10 @@ export default function ProductsClient({ initialGroupCode }: ProductsClientProps
     search: undefined,
     inStock: false,
   });
-  const [sort, setSort] = useState<SortOption>('popular');
+  const [sort, setSort] = useState<SortOption>(() => {
+    if (typeof window === 'undefined') return 'popular';
+    return (localStorage.getItem('ar-market-sort') as SortOption) ?? 'popular';
+  });
 
   // Stores full filtered popular list for client-side load-more
   const popularAllRef = useRef<UiPopularProduct[]>([]);
@@ -153,7 +156,7 @@ export default function ProductsClient({ initialGroupCode }: ProductsClientProps
           total={products.length}
           categories={categories}
           onFiltersChange={setFilters}
-          onSortChange={setSort}
+          onSortChange={(s) => { localStorage.setItem('ar-market-sort', s); setSort(s); }}
         />
       </motion.div>
 

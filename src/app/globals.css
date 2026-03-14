@@ -118,6 +118,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background-color 0.25s ease, color 0.25s ease;
+  /* Prevent Telegram WebView from triggering page reload on overscroll */
+  overscroll-behavior: none;
 }
 
 /* ============================================================
