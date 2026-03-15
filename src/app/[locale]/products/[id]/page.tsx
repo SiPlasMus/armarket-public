@@ -1,4 +1,4 @@
-import { cache } from 'react';
+import { cache, Suspense } from 'react';
 import { setRequestLocale } from 'next-intl/server';
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
@@ -14,6 +14,15 @@ import { formatPrice } from '@/lib/utils';
 // cache() deduplicates calls within the same render pass —
 // generateMetadata and the page component share one fetch instead of two.
 const getProduct = cache(fetchProductById);
+
+/** Fetches related products independently so the main product renders without waiting. */
+async function RelatedSection({ groupCode, currentId }: { groupCode: number; currentId: string }) {
+  const relatedRes = groupCode
+    ? await fetchProducts({ groupCode, limit: 5 }).catch(() => null)
+    : null;
+  const related = (relatedRes?.products ?? []).filter((p) => p.id !== currentId).slice(0, 4);
+  return <RelatedProducts products={related} />;
+}
 
 interface ProductDetailPageProps {
   params: Promise<{ locale: string; id: string }>;
@@ -94,14 +103,6 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
   const name         = isRu ? product.nameRu : product.name;
   const categoryName = isRu ? product.categoryNameRu : product.categoryName;
   const price        = formatPrice(product.price, locale as 'uz' | 'ru');
-
-  // Related: same group, exclude current
-  const relatedRes = product.groupCode
-    ? await fetchProducts({ groupCode: product.groupCode, limit: 5 }).catch(() => null)
-    : null;
-  const related = (relatedRes?.products ?? [])
-    .filter((p) => p.id !== product.id)
-    .slice(0, 4);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -281,8 +282,10 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
         </div>
       </div>
 
-      {/* ── Related products ─────────────────────────────────────────── */}
-      <RelatedProducts products={related} />
+      {/* ── Related products — streamed separately so main content renders first ── */}
+      <Suspense fallback={null}>
+        <RelatedSection groupCode={product.groupCode} currentId={product.id} />
+      </Suspense>
     </div>
   );
 }

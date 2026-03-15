@@ -210,7 +210,8 @@ export async function fetchProducts(params: {
   if (params.priceListId != null) qs.set('priceListId', String(params.priceListId));
 
   const res = await api<ArMarketPagedResponseApi<ArMarketProductApi>>(
-    `/api/armarket/products?${qs}`
+    `/api/armarket/products?${qs}`,
+    { next: { revalidate: 60 } }
   );
   return { products: res.Data.map(mapProductCard), page: res.Page, hasMore: res.HasMore };
 }
@@ -218,7 +219,8 @@ export async function fetchProducts(params: {
 export async function fetchProductById(itemCode: string): Promise<UiProductDetails | null> {
   try {
     const data = await api<ArMarketProductDetailsApi>(
-      `/api/armarket/products/${encodeURIComponent(itemCode)}`
+      `/api/armarket/products/${encodeURIComponent(itemCode)}`,
+      { next: { revalidate: 86400 } } // 1 day — product details rarely change
     );
     return mapProductDetails(data);
   } catch (err) {
@@ -247,14 +249,14 @@ export async function fetchPopularProducts(params?: {
   if (params?.priceListId != null) qs.set('priceListId', String(params.priceListId));
 
   const suffix = qs.toString() ? `?${qs}` : '';
-  const data = await api<ArMarketPopularProductApi[]>(`/api/armarket/products/popular${suffix}`);
+  const data = await api<ArMarketPopularProductApi[]>(`/api/armarket/products/popular${suffix}`, { next: { revalidate: 60 } });
   return data.map(mapPopularProduct);
 }
 
 type ItemGroupApi = { GroupCode: number; GroupName: string; ItemsCount: number };
 
 export async function fetchCategories(): Promise<UiCategory[]> {
-  const data = await api<ItemGroupApi[]>('/api/Items/groups?top=50&skip=0');
+  const data = await api<ItemGroupApi[]>('/api/Items/groups?top=50&skip=0', { next: { revalidate: 600 } });
   return data.map((g) => ({
     groupCode: g.GroupCode,
     name: g.GroupName,

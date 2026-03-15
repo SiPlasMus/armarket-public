@@ -14,8 +14,10 @@ export const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:50
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY || '';
 
 // Extended init that accepts plain objects as body (no need to JSON.stringify manually)
+// and Next.js-specific fetch options (revalidate, tags).
 export interface ApiInit extends Omit<RequestInit, 'body'> {
   body?: Record<string, unknown> | unknown[] | string | FormData | URLSearchParams | Blob | ArrayBuffer | null;
+  next?: { revalidate?: number | false; tags?: string[] };
 }
 
 function prepareBody(raw: ApiInit['body']): { serialized: BodyInit | undefined; isJson: boolean } {

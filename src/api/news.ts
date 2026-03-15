@@ -9,12 +9,12 @@ export async function fetchNews(params?: {
   const { page = 1, limit = 6, category } = params ?? {};
   const qs = new URLSearchParams({ page: String(page), limit: String(limit) });
   qs.set('category', category && category !== 'all' ? category : 'all');
-  return api<PaginatedResponse<NewsItem>>(`/api/news?${qs}`);
+  return api<PaginatedResponse<NewsItem>>(`/api/news?${qs}`, { next: { revalidate: 300 } });
 }
 
 export async function fetchNewsBySlug(slug: string): Promise<NewsItem | null> {
   try {
-    return await api<NewsItem>(`/api/news/${encodeURIComponent(slug)}`);
+    return await api<NewsItem>(`/api/news/${encodeURIComponent(slug)}`, { next: { revalidate: 300 } });
   } catch (err) {
     const msg = err instanceof Error ? err.message : '';
     if (!msg.includes('404')) console.error('[fetchNewsBySlug]', slug, msg);
@@ -23,9 +23,9 @@ export async function fetchNewsBySlug(slug: string): Promise<NewsItem | null> {
 }
 
 export async function fetchFeaturedNews(): Promise<NewsItem | null> {
-  return api<NewsItem | null>('/api/news/featured').catch(() => null);
+  return api<NewsItem | null>('/api/news/featured', { next: { revalidate: 300 } }).catch(() => null);
 }
 
 export async function fetchLatestNews(limit = 4): Promise<NewsItem[]> {
-  return api<NewsItem[]>(`/api/news/latest?limit=${limit}`).catch(() => []);
+  return api<NewsItem[]>(`/api/news/latest?limit=${limit}`, { next: { revalidate: 300 } }).catch(() => []);
 }
