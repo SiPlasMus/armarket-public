@@ -2,7 +2,7 @@ import { cache, Suspense } from 'react';
 import { setRequestLocale } from 'next-intl/server';
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
-import { ArrowLeft, CheckCircle2, XCircle, Tag, Barcode, Box } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, XCircle, Tag, Barcode, Box, Hash } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { fetchProductById, fetchProducts } from '@/lib/armarketApi';
 import type { UiProductDetails } from '@/lib/armarketApi';
@@ -206,8 +206,17 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
           )}
 
           {/* Meta info block */}
-          {(product.brandName || (!basicOnly && product.barcodes.length > 0) || product.attributeName || product.mxikName) && (
+          {(product.id || product.brandName || (!basicOnly && product.barcodes.length > 0) || product.attributeName || product.mxikName) && (
             <div className="mb-6 p-4 bg-surface-alt rounded-2xl border border-border space-y-2.5">
+              {product.id && (
+                <div className="flex items-start gap-2.5">
+                  <Hash className="h-4 w-4 text-foreground-muted mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-xs text-foreground-muted">{isRu ? 'Код товара' : 'Tovar kodi'}</p>
+                    <p className="text-sm font-medium text-foreground">{product.id}</p>
+                  </div>
+                </div>
+              )}
               {product.brandName && (
                 <div className="flex items-start gap-2.5">
                   <Tag className="h-4 w-4 text-foreground-muted mt-0.5 shrink-0" />
