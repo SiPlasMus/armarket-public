@@ -13,7 +13,8 @@
       "Bash(cd D:/Projects/UNBOX/armarket && npm run build 2>&1 | tail -50)",
       "Bash(cd D:/Projects/UNBOX/armarket && npm run build 2>&1 | tail -40)",
       "Bash(npx tsc:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(cd:*)"
     ]
   }
 }

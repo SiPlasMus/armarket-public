@@ -1,14 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations, useLocale } from 'next-intl';
-import { Search, SlidersHorizontal, X, Check, ChevronDown } from 'lucide-react';
+import { Search, SlidersHorizontal, X, Check, ChevronDown, ScanBarcode } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 import { slideInBottom, backdropVariants } from '@/lib/animations';
 import type { ProductFilters as Filters, SortOption } from '@/types';
 import type { UiCategory } from '@/lib/armarketApi';
+import { BarcodeScannerModal } from './BarcodeScannerModal';
 
 interface ProductFiltersProps {
   filters: Filters;
@@ -33,8 +34,12 @@ export function ProductFilters({
   const tc     = useTranslations('common');
   const locale = useLocale() as 'uz' | 'ru';
 
-  const [searchInput, setSearchInput] = useState(filters.search ?? '');
-  const [mobileOpen, setMobileOpen]   = useState(false);
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  const [searchInput,  setSearchInput]  = useState(filters.search ?? '');
+  const [mobileOpen,   setMobileOpen]   = useState(false);
+  const [scannerOpen,  setScannerOpen]  = useState(false);
+  const [inputFocused, setInputFocused] = useState(false);
 
   // Debounce search → call onFiltersChange after 320ms idle
   useEffect(() => {
@@ -106,24 +111,41 @@ export function ProductFilters({
           <div className="relative flex-1">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground-muted pointer-events-none" />
             <input
+              ref={searchRef}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
+              onFocus={() => setInputFocused(true)}
+              onBlur={() => setInputFocused(false)}
               placeholder={t('search')}
               className={cn(
-                'w-full h-10 pl-10 pr-4 rounded-xl text-sm',
+                'w-full h-10 pl-10 rounded-xl text-sm',
                 'bg-surface-alt border border-border text-foreground placeholder:text-foreground-muted',
                 'hover:border-brand/30 focus:border-brand focus:outline-none focus:ring-2 focus:ring-[var(--ring)]',
-                'transition-colors duration-150'
+                'transition-colors duration-150',
+                (searchInput || inputFocused) ? 'pr-10' : 'pr-4'
               )}
             />
-            {searchInput && (
+            {/* Right-side icon: X when typing, scanner icon when focused (mobile only) */}
+            {searchInput ? (
               <button
                 onClick={() => setSearchInput('')}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground-muted hover:text-foreground"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
-            )}
+            ) : inputFocused ? (
+              <button
+                onMouseDown={(e) => {
+                  e.preventDefault();           // keep icon visible (block blur)
+                  searchRef.current?.blur();    // dismiss keyboard
+                  setScannerOpen(true);
+                }}
+                className="md:hidden absolute right-3 top-1/2 -translate-y-1/2 text-foreground-muted hover:text-brand transition-colors"
+                aria-label="Barkod skaner"
+              >
+                <ScanBarcode className="h-4 w-4" />
+              </button>
+            ) : null}
           </div>
 
           {/* Mobile: Filter button */}
@@ -204,6 +226,16 @@ export function ProductFilters({
           )}
         </div>
       </div>
+
+      {/* ── Barcode scanner modal (mobile only) ─────────────────────────── */}
+      <BarcodeScannerModal
+        open={scannerOpen}
+        onClose={() => setScannerOpen(false)}
+        onScan={(barcode) => {
+          setSearchInput(barcode);
+          setScannerOpen(false);
+        }}
+      />
 
       {/* ── Mobile filter bottom sheet ───────────────────────────────────── */}
       <AnimatePresence>
