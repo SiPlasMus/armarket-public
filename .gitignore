@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+armarket-news-api-for-frontend.txt
+backend-setup.txt
+frontend_armarket_api_handoff.txt
