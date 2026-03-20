@@ -14,6 +14,7 @@ interface ImageWithFallbackProps {
   fallbackText?: string;
   priority?: boolean;
   fill?: boolean;
+  unoptimized?: boolean;
 }
 
 export function ImageWithFallback({
@@ -25,6 +26,7 @@ export function ImageWithFallback({
   fallbackText,
   priority = false,
   fill = false,
+  unoptimized = false,
 }: ImageWithFallbackProps) {
   const [error, setError] = useState(false);
   const showFallback = !src || error;
@@ -60,6 +62,7 @@ export function ImageWithFallback({
         priority={priority}
         onError={() => setError(true)}
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        unoptimized={unoptimized}
       />
     );
   }
@@ -73,6 +76,7 @@ export function ImageWithFallback({
       className={cn('object-cover', className)}
       priority={priority}
       onError={() => setError(true)}
+      unoptimized={unoptimized}
     />
   );
 }

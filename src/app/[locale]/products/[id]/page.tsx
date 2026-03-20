@@ -141,6 +141,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
                 alt={name}
                 fill
                 priority
+                unoptimized
                 className="object-contain p-8"
                 fallbackText={name}
               />
