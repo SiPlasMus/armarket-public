@@ -29,11 +29,6 @@ export default function Header() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Close mobile menu on route change
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
-
   const links: NavLink[] = [
     { href: '/',         label: t('home') },
     { href: '/products', label: t('products') },

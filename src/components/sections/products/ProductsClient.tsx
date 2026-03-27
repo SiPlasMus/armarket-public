@@ -138,10 +138,33 @@ export default function ProductsClient({ initialGroupCode }: ProductsClientProps
         variants={fadeInUp}
         initial="hidden"
         animate="visible"
-        className="mb-8"
+        className="relative mb-8 overflow-hidden rounded-[2rem] border border-border bg-[linear-gradient(140deg,color-mix(in_srgb,var(--brand)_10%,var(--surface))_0%,var(--surface-elevated)_58%,var(--surface-alt)_100%)] p-6 shadow-theme-sm sm:p-8"
       >
-        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{t('title')}</h1>
-        <p className="text-foreground-muted mt-1">{t('subtitle')}</p>
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -right-12 top-0 h-40 w-40 rounded-full bg-brand/10 blur-3xl" />
+          <div className="absolute -left-10 bottom-0 h-32 w-32 rounded-full bg-yellow-400/10 blur-3xl" />
+        </div>
+        <div className="relative">
+          <div className="mb-3 inline-flex rounded-full border border-brand/20 bg-brand/8 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-brand">
+            Product flow
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{t('title')}</h1>
+          <p className="mt-1 max-w-2xl text-foreground-muted">{t('subtitle')}</p>
+          <div className="mt-6 grid gap-3 sm:grid-cols-3">
+            <div className="rounded-2xl border border-border bg-surface-elevated/80 p-4">
+              <div className="text-xs uppercase tracking-[0.18em] text-foreground-muted">Mode</div>
+              <div className="mt-2 text-lg font-semibold text-foreground">Live catalog</div>
+            </div>
+            <div className="rounded-2xl border border-border bg-surface-elevated/80 p-4">
+              <div className="text-xs uppercase tracking-[0.18em] text-foreground-muted">Sort</div>
+              <div className="mt-2 text-lg font-semibold text-foreground">{sort}</div>
+            </div>
+            <div className="rounded-2xl border border-border bg-surface-elevated/80 p-4">
+              <div className="text-xs uppercase tracking-[0.18em] text-foreground-muted">Visible</div>
+              <div className="mt-2 text-lg font-semibold text-foreground">{displayed.length}</div>
+            </div>
+          </div>
+        </div>
       </motion.div>
 
       <motion.div

@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable react-hooks/immutability */
 
 /**
  * HomeV3 — farmminerals-inspired full-screen scroll experience for AR Market

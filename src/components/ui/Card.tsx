@@ -2,7 +2,6 @@
 
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { cardHover } from '@/lib/animations';
 
 interface CardProps {
   className?: string;

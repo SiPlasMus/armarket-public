@@ -108,10 +108,13 @@
 }
 
 html {
-  scroll-behavior: smooth;
   overscroll-behavior: none;
   background-color: var(--surface); /* Prevents dark flash during Next.js page transitions in Telegram WebView */
   color-scheme: light;             /* Prevents Telegram from force-applying dark mode */
+}
+
+html:not([data-webview="telegram"]) {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -123,6 +126,17 @@ body {
   transition: background-color 0.25s ease, color 0.25s ease;
   /* Prevent Telegram WebView from triggering page reload on overscroll */
   overscroll-behavior: none;
+}
+
+html[data-webview="telegram"],
+html[data-webview="telegram"] body {
+  scroll-behavior: auto;
+  overscroll-behavior-y: contain;
+}
+
+html[data-webview="telegram"] body {
+  min-height: 100dvh;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* ============================================================

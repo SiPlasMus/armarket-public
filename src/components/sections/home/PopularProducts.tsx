@@ -42,7 +42,6 @@ export default function PopularProducts() {
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
     fetchPopularProducts({ period: active, limit: 8 })
       .then((data) => { if (!cancelled) { setProducts(data); setLoading(false); } })
       .catch(() => { if (!cancelled) { setProducts([]); setLoading(false); } });
@@ -54,11 +53,16 @@ export default function PopularProducts() {
     const nextIdx = PERIODS.findIndex((p) => p.id === period);
     if (prevIdx === nextIdx) return;
     setDirection(nextIdx > prevIdx ? 1 : -1);
+    setLoading(true);
     setActive(period);
   }
 
   return (
-    <section className="py-16 sm:py-20 bg-surface overflow-hidden">
+    <section className="relative overflow-hidden bg-surface py-16 sm:py-20">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-[10%] top-0 h-52 w-52 rounded-full bg-brand/7 blur-3xl" />
+        <div className="absolute bottom-0 right-[8%] h-64 w-64 rounded-full bg-yellow-400/7 blur-3xl" />
+      </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* ── Header ─────────────────────────── */}
@@ -67,20 +71,26 @@ export default function PopularProducts() {
           initial="hidden"
           whileInView="visible"
           viewport={viewportOnce}
-          className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8"
+          className="relative z-10 flex flex-col gap-4 mb-8 sm:flex-row sm:items-end sm:justify-between"
         >
           <div>
+            <motion.div
+              variants={fadeInUp}
+              className="mb-3 inline-flex rounded-full border border-brand/20 bg-brand/8 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-brand"
+            >
+              Trending selection
+            </motion.div>
             <motion.h2 variants={fadeInUp} className="text-2xl sm:text-3xl font-bold text-foreground">
               {tp('title')}
             </motion.h2>
-            <motion.p variants={fadeInUp} className="text-foreground-muted mt-1 text-sm">
+            <motion.p variants={fadeInUp} className="text-foreground-muted mt-1 max-w-xl text-sm sm:text-base">
               {tp('subtitle')}
             </motion.p>
           </div>
           <motion.div variants={fadeInUp}>
             <Link
               href="/products"
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-brand hover:underline whitespace-nowrap"
+              className="relative z-20 inline-flex items-center gap-2 rounded-full border border-border bg-surface-elevated px-4 py-2 text-sm font-medium text-foreground shadow-theme-sm transition-colors hover:border-brand/30 hover:text-brand whitespace-nowrap"
             >
               {t('viewAll')} <ArrowRight className="h-3.5 w-3.5" />
             </Link>
@@ -93,9 +103,9 @@ export default function PopularProducts() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={viewportOnce}
           transition={{ duration: 0.4 }}
-          className="mb-8"
+          className="relative z-10 mb-8"
         >
-          <div className="inline-flex items-center gap-0.5 p-1 bg-surface-alt border border-border rounded-2xl">
+          <div className="inline-flex items-center gap-0.5 rounded-2xl border border-border bg-surface-elevated p-1 shadow-theme-sm">
             {PERIODS.map((period) => (
               <button
                 key={period.id}
@@ -120,7 +130,7 @@ export default function PopularProducts() {
         </motion.div>
 
         {/* ── Product grid ── */}
-        <div className="relative overflow-hidden">
+        <div className="relative z-10 overflow-hidden">
           {loading ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {Array.from({ length: 8 }).map((_, i) => <ProductCardSkeleton key={i} />)}

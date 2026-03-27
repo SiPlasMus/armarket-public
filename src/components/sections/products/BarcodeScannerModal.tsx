@@ -400,7 +400,7 @@ export function BarcodeScannerModal({ open, onClose, onScan }: BarcodeScannerMod
             <p className="text-center text-xs pb-6 px-5">
               {lastDecoded
                 ? <span className="text-brand font-medium">✓ {lastDecoded}</span>
-                : <span className="text-white/40">Barkodni ramka ichiga to'g'rilang</span>
+                : <span className="text-white/40">Barkodni ramka ichiga to&#39;g&#39;rilang</span>
               }
             </p>
           </motion.div>

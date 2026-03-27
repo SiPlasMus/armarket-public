@@ -32,26 +32,24 @@ function NewsCardSkeleton() {
 }
 
 export function NewsClient() {
-  const t  = useTranslations('news');
+  const t = useTranslations('news');
   const tc = useTranslations('common');
   const tabsId = useId();
 
-  const [active, setActive]           = useState<Filter>('all');
-  const [items, setItems]             = useState<NewsItem[]>([]);
-  const [featured, setFeatured]       = useState<NewsItem | null>(null);
-  const [page, setPage]               = useState(1);
-  const [hasMore, setHasMore]         = useState(false);
-  const [loading, setLoading]         = useState(true);
+  const [active, setActive] = useState<Filter>('all');
+  const [items, setItems] = useState<NewsItem[]>([]);
+  const [featured, setFeatured] = useState<NewsItem | null>(null);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
 
   const reqIdRef = useRef(0);
 
-  // Fetch featured once on mount
   useEffect(() => {
     fetchFeaturedNews().then(setFeatured).catch(() => {});
   }, []);
 
-  // Reload list on filter change
   useEffect(() => {
     const reqId = ++reqIdRef.current;
     setLoading(true);
@@ -93,22 +91,44 @@ export function NewsClient() {
     setActive(f);
   }
 
-  // Show featured only on "all" tab and only if it exists
   const showFeatured = active === 'all' && featured != null;
-  // Exclude featured from list to avoid duplication
-  const listItems = showFeatured
-    ? items.filter((n) => n.id !== featured!.id)
-    : items;
+  const listItems = showFeatured ? items.filter((n) => n.id !== featured!.id) : items;
 
   return (
     <div>
-      {/* ── Page header ───────────────────────────────────────────── */}
-      <motion.div variants={fadeInUp} initial="hidden" animate="visible" className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{t('title')}</h1>
-        <p className="text-foreground-muted mt-1">{t('subtitle')}</p>
+      <motion.div
+        variants={fadeInUp}
+        initial="hidden"
+        animate="visible"
+        className="relative mb-8 overflow-hidden rounded-[2rem] border border-border bg-[linear-gradient(145deg,color-mix(in_srgb,var(--brand)_9%,var(--surface))_0%,var(--surface-elevated)_60%,var(--surface-alt)_100%)] p-6 shadow-theme-sm sm:p-8"
+      >
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -right-10 top-0 h-44 w-44 rounded-full bg-brand/10 blur-3xl" />
+          <div className="absolute left-0 top-10 h-28 w-28 rounded-full bg-orange-400/10 blur-3xl" />
+        </div>
+        <div className="relative">
+          <div className="mb-3 inline-flex rounded-full border border-brand/20 bg-brand/8 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-brand">
+            News stream
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{t('title')}</h1>
+          <p className="mt-1 max-w-2xl text-foreground-muted">{t('subtitle')}</p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            {FILTERS.map((f) => (
+              <div
+                key={f}
+                className={`rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] ${
+                  active === f
+                    ? 'border-brand/25 bg-brand/10 text-brand'
+                    : 'border-border bg-surface-elevated text-foreground-muted'
+                }`}
+              >
+                {t(`categories.${f}`)}
+              </div>
+            ))}
+          </div>
+        </div>
       </motion.div>
 
-      {/* ── Category tabs ─────────────────────────────────────────── */}
       <div className="flex gap-2 flex-wrap mb-8">
         {FILTERS.map((f) => (
           <button
@@ -131,7 +151,6 @@ export function NewsClient() {
 
       {loading ? (
         <div className="space-y-5">
-          {/* Featured skeleton */}
           {active === 'all' && (
             <div className="rounded-2xl border border-border bg-surface-elevated overflow-hidden animate-pulse">
               <div className="aspect-[16/7] bg-surface-alt" />
@@ -147,7 +166,6 @@ export function NewsClient() {
         </div>
       ) : (
         <>
-          {/* ── Featured card (all tab only) ──────────────────────── */}
           <AnimatePresence mode="wait">
             {showFeatured && (
               <motion.div
@@ -163,7 +181,6 @@ export function NewsClient() {
             )}
           </AnimatePresence>
 
-          {/* ── Grid ──────────────────────────────────────────────── */}
           <AnimatePresence mode="wait">
             {listItems.length === 0 && !showFeatured ? (
               <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
@@ -191,7 +208,6 @@ export function NewsClient() {
             ) : null}
           </AnimatePresence>
 
-          {/* ── Load more ─────────────────────────────────────────── */}
           {hasMore && (
             <div className="flex justify-center mt-8">
               <Button variant="secondary" size="md" loading={loadingMore} onClick={handleLoadMore}>
@@ -202,7 +218,7 @@ export function NewsClient() {
 
           {!hasMore && items.length > PAGE_SIZE && (
             <p className="text-center text-sm text-foreground-muted mt-8">
-              — {items.length} {tc('all').toLowerCase()} —
+              - {items.length} {tc('all').toLowerCase()} -
             </p>
           )}
         </>
